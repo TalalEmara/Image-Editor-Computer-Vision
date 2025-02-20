@@ -9,32 +9,8 @@ class ParametersPanel(QWidget):
         self.current_group_box = None
         
         self.parameter_panel = QVBoxLayout(self)
-        
-    def createGroupBox(self, title, controls):
-        group = QGroupBox(title)
-        layout = QVBoxLayout()
 
-        for control_type, control_data in controls:
-            if control_type == "Label":
-                label = QLabel(control_data)
-                layout.addWidget(label)
-            elif control_type == "ComboBox":
-                combo = QComboBox()
-                combo.addItems(control_data)
-                combo.currentIndexChanged.connect(lambda _, cb=combo: self.updateParams(cb))
-                layout.addWidget(combo)
-            elif control_type == "Slider":
-                slider = QSlider(Qt.Horizontal)
-                slider.setRange(*control_data)
-                layout.addWidget(slider)
-            elif control_type == "SpinBox":
-                spin = QSpinBox()
-                spin.setRange(*control_data)
-                layout.addWidget(spin)
-
-        group.setLayout(layout)
-        return group
-
+    
     def updateGroupBox(self, selected_mode):
         if self.current_group_box:
             self.parameter_panel.removeWidget(self.current_group_box)
@@ -82,6 +58,32 @@ class ParametersPanel(QWidget):
             self.parameter_panel.addWidget(self.current_group_box)
             self.parameter_panel.update()  
             self.update()  
+
+        
+    def createGroupBox(self, title, controls):
+        group = QGroupBox(title)
+        layout = QVBoxLayout()
+
+        for control_type, control_data in controls:
+            if control_type == "Label":
+                label = QLabel(control_data)
+                layout.addWidget(label)
+            elif control_type == "ComboBox":
+                combo = QComboBox()
+                combo.addItems(control_data)
+                combo.currentIndexChanged.connect(lambda _, cb=combo: self.updateParams(cb))
+                layout.addWidget(combo)
+            elif control_type == "Slider":
+                slider = QSlider(Qt.Horizontal)
+                slider.setRange(*control_data)
+                layout.addWidget(slider)
+            elif control_type == "SpinBox":
+                spin = QSpinBox()
+                spin.setRange(*control_data)
+                layout.addWidget(spin)
+
+        group.setLayout(layout)
+        return group
 
     def updateParams(self, sender):
         selected_item = sender.currentText()
