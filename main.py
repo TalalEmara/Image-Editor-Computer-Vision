@@ -21,20 +21,12 @@ class ImageProcessingApp(QMainWindow):
         print("UI connected")
 
     def initializeParameters(self):
-        self.group_boxes = {}
-        print("Group boxes initialized")
+        
+        print("Params initialized")
 
     def initializeUI(self):
        
         print("UI components initialized")
-
-    def createGroupBox(self, title, controls):
-       
-        print(f"GroupBox created")
-
-    def toggleGroupBox(self, group_name):
-
-        print(f"GroupBox '{group_name}' toggled")
 
     def connectUI(self):
 
