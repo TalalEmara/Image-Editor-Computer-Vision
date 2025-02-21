@@ -28,22 +28,22 @@ class ParametersPanel(QWidget):
 
     def stylingUi(self, widget):
        
-        widget.setStyleSheet(GENERAL_STYLE)
+        self.setStyleSheet(GENERAL_STYLE)
+
+        for group_box in self.findChildren(QGroupBox):
+            group_box.setStyleSheet(GROUP_BOX_STYLE)
+
+        for label in self.findChildren(QLabel):
+            label.setStyleSheet(LABEL_STYLE)
         
-        for child in widget.findChildren(QGroupBox):
-            child.setStyleSheet(GROUP_BOX_STYLE)
-        
-        for child in widget.findChildren(QLabel):
-            child.setStyleSheet(LABEL_STYLE)
-        
-        for child in widget.findChildren(QComboBox):
-            child.setStyleSheet(COMBO_BOX_STYLE)
-        
-        for child in widget.findChildren(QSlider):
-            child.setStyleSheet(SLIDER_STYLE)
-        
-        for child in widget.findChildren(QSpinBox):
-            child.setStyleSheet(SPIN_BOX_STYLE)
+        for combo in self.findChildren(QComboBox):
+            combo.setStyleSheet(COMBO_BOX_STYLE)
+
+        for slider in self.findChildren(QSlider):
+            slider.setStyleSheet(SLIDER_STYLE)
+
+        for spinbox in self.findChildren(QSpinBox):
+            spinbox.setStyleSheet(SPIN_BOX_STYLE)
        
     
     def createSliderWithSpinBox(self, label_text, min_val, max_val):
@@ -54,10 +54,11 @@ class ParametersPanel(QWidget):
         
         label = QLabel(label_text)
         label.setMinimumWidth(100)
-        label.setStyleSheet(LABEL_STYLE)
+     
         
         slider = QSlider(Qt.Horizontal)
         slider.setRange(min_val, max_val)
+        slider.setFixedWidth(110)
         slider.setStyleSheet(SLIDER_STYLE)
         
         spinbox = QSpinBox()
