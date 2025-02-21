@@ -29,6 +29,8 @@ class ParametersPanel(QWidget):
     def stylingUi(self, widget):
        
         self.setStyleSheet(GENERAL_STYLE)
+        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Minimum)
+        self.parameter_panel.setAlignment(Qt.AlignTop) 
 
         for group_box in self.findChildren(QGroupBox):
             group_box.setStyleSheet(GROUP_BOX_STYLE)
@@ -58,7 +60,7 @@ class ParametersPanel(QWidget):
         
         slider = QSlider(Qt.Horizontal)
         slider.setRange(min_val, max_val)
-        slider.setFixedWidth(50)
+        slider.setMinimumWidth(100)
         slider.setStyleSheet(SLIDER_STYLE)
         
         spinbox = QSpinBox()

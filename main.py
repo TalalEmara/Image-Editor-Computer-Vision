@@ -1,35 +1,39 @@
 
-from PyQt5.QtWidgets import (
-    QApplication, QMainWindow
-)
-from PyQt5.QtWidgets import (
-    QApplication, QMainWindow
-)
-from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QHBoxLayout
+from modes import ModeSelector
+from parameters_Panel import ParametersPanel
 
 class ImageProcessingApp(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Image Processing")
         self.initializeParameters()
-        print("Parameters initialized")
+        
 
         self.initializeUI()
-        print("UI initialized")
-
+      
         self.connectUI()
-        print("UI connected")
+        self.setStyleSheet("""QMainWindow {background-color: #F5F5F0;}""")
 
     def initializeParameters(self):
         
         print("Params initialized")
 
     def initializeUI(self):
+        self.modes_panel = ModeSelector()
+        self.parameters_panel = ParametersPanel()
+
+        main_widget = QWidget()
+        self.setCentralWidget(main_widget)
+        main_layout = QHBoxLayout(main_widget)
+
+        main_layout.addLayout(self.modes_panel.createmodePanel())
+        main_layout.addWidget(self.parameters_panel)
        
         print("UI components initialized")
 
     def connectUI(self):
-
+        self.modes_panel.mode_selected.connect(self.parameters_panel.updateGroupBox)
         print("Ui connected")
 
 if __name__ == '__main__':
