@@ -103,35 +103,3 @@ SLIDER_STYLE = """
 """
 
 
-LINE_EDIT_STYLE = """
-    QLineEdit {
-        background-color: #2B2B3D;
-        color: #E0E6F0;
-        border: 1px solid #4E4E64;
-        border-radius: 4px;
-        padding: 4px 8px;
-    }
-    QLineEdit:focus {
-        border: 1px solid #6C9EFF;
-    }
-"""
-
-BUTTON_STYLE = """
-    QPushButton {
-        background-color: #3A3A4E;
-        color: #E0E6F0;
-        border: 1px solid #4E4E64;
-        border-radius: 4px;
-        padding: 5px 10px;
-    }
-    QPushButton:hover {
-        background-color: #4E4E64;
-        border: 1px solid #6C9EFF;
-        color: #FFFFFF;
-    }
-    QPushButton:pressed {
-        background-color: #6C9EFF;
-        color: #FFFFFF;
-        border: 1px solid #91BFFF;
-    }
-"""
