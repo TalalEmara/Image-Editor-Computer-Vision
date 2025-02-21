@@ -11,7 +11,7 @@ class ModeSelector(QWidget):
         self.buttons = {}
       
         button_names = {
-            "Noise & Filtering": "Noise & Filter",
+            "Noise and Filtering": "Noise & Filter",
             "Edge Detection": "Edge Detection",
             "Threshold": "Threshold",
             "Color Processing": "Color Processing",

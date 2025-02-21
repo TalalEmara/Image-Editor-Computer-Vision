@@ -52,7 +52,7 @@ COMBO_BOX_STYLE = f"""
         border: 2px solid {ACCENT_COLOR};
         border-radius: 4px;
         padding: 4px 8px;
-        font-size: 16px; 
+        font-size: 14px; 
     }}
     QComboBox:hover {{
         border: 2px solid {ACCENT_HOVER};
