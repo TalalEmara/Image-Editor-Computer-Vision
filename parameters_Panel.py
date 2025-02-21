@@ -58,7 +58,7 @@ class ParametersPanel(QWidget):
         
         slider = QSlider(Qt.Horizontal)
         slider.setRange(min_val, max_val)
-        slider.setFixedWidth(110)
+        slider.setMinimumWidth(110)
         slider.setStyleSheet(SLIDER_STYLE)
         
         spinbox = QSpinBox()
