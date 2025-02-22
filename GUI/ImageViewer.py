@@ -23,7 +23,7 @@ class ImageViewer(QWidget):
 
     def initializeUI(self):
         self.image = None
-        self.isReadOnly = True  # Control whether uploading is enabled
+        self.isReadOnly = True 
         self.image_label = QLabel("Double-click to upload an image", self)
         self.image_label.setAlignment(Qt.AlignCenter)
 
@@ -62,7 +62,6 @@ class ImageViewer(QWidget):
                 pixmap.scaled(self.image_label.width(), self.image_label.height(), Qt.KeepAspectRatio))
 
     def setReadOnly(self, enabled: bool):
-        """Enable or disable image uploading."""
         self.isReadOnly = enabled
         if enabled:
             self.image_label.setText("Image viewing mode only")
@@ -72,8 +71,6 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     viewer = ImageViewer()
 
-    # Example: Disable upload functionality
-    # viewer.setUploadEnabled(False)
 
     viewer.show()
     sys.exit(app.exec_())
