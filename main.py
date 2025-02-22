@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QHBoxLayout
 from GUI.modes import ModeSelector
 from GUI.parameters_Panel import ParametersPanel
 from GUI.ImageViewer import ImageViewer
+from Core.NoiseAdder import add_uniform_noise,add_gaussian_noise,add_salt_pepper_noise
 
 class ImageProcessingApp(QMainWindow):
     def __init__(self):
@@ -45,6 +46,7 @@ class ImageProcessingApp(QMainWindow):
 
         print("Ui connected")
     def processImage(self,image):
+        image = add_gaussian_noise(image, 2,100)
         self.outputViewer.setImage(image)
 
 if __name__ == '__main__':
