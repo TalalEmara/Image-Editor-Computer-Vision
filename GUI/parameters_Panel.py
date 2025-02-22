@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import (
 )
 
 
-from styles import (
+from GUI.styles import (
     GENERAL_STYLE, GROUP_BOX_STYLE, LABEL_STYLE, 
     COMBO_BOX_STYLE, SLIDER_STYLE, SPIN_BOX_STYLE
 )

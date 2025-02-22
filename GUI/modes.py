@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QVBoxLayout, QGroupBox, QPushButton, QWidget
 from PyQt5.QtCore import pyqtSignal
-from styles import BUTTON_STYLE, GROUP_BOX_STYLE, GENERAL_STYLE
+from GUI.styles import BUTTON_STYLE, GROUP_BOX_STYLE, GENERAL_STYLE
 
 class ModeSelector(QWidget):
     mode_selected = pyqtSignal(str)  

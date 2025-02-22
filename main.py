@@ -1,7 +1,7 @@
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QHBoxLayout
-from modes import ModeSelector
-from parameters_Panel import ParametersPanel
+from GUI.modes import ModeSelector
+from GUI.parameters_Panel import ParametersPanel
 
 class ImageProcessingApp(QMainWindow):
     def __init__(self):
