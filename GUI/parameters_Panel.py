@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QGroupBox, QLabel, QComboBox, QSlider, 
     QSpinBox, QHBoxLayout, QSizePolicy
 )
-
+from PyQt5.QtCore import pyqtSignal
 
 from GUI.styles import (
     GENERAL_STYLE, GROUP_BOX_STYLE, LABEL_STYLE, 
@@ -12,13 +12,21 @@ from GUI.styles import (
 
 
 class ParametersPanel(QWidget):
+    parameter_changed = pyqtSignal(dict)  
+
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.parameter_panel = QVBoxLayout(self)
         self.parameter_panel.setContentsMargins(0, 0, 0, 0)
         self.current_group_boxes = []
+        self.parameters = {}
         self.setupUI()
-        
+
+    def update_parameter(self, key, value):
+        self.parameters[key] = value
+        self.parameter_changed.emit(self.parameters)
+
     def setupUI(self):
         self.setSizePolicy(
             QSizePolicy.Preferred,
@@ -122,12 +130,24 @@ class ParametersPanel(QWidget):
                                 *control['range']
                             )
                             controls_layout.addWidget(control_widget)
-                
+                            slider = control_widget.findChildren(QSlider)[0]
+                            spinbox = control_widget.findChildren(QSpinBox)[0]
+
+                            def emit_parameter_change():
+                                self.update_parameter(control['label'], spinbox.value())
+
+                            slider.valueChanged.connect(emit_parameter_change)
+                            spinbox.valueChanged.connect(emit_parameter_change)
+                            self.update_parameter(control['label'], spinbox.value())
+                    
                 controls_widget.adjustSize()
                 group.adjustSize()
                 self.adjustSize()
-
+            
+            type_combo.currentTextChanged.connect(lambda text: self.update_parameter(config['title'], text))
             type_combo.currentTextChanged.connect(updateControls)
+
+            self.update_parameter(config['title'], selector_config['options'][0])
             updateControls(selector_config['options'][0])
 
         group.setLayout(layout)
@@ -140,6 +160,7 @@ class ParametersPanel(QWidget):
             group_box.setParent(None)
             group_box.deleteLater()
         self.current_group_boxes.clear()
+        self.parameters.clear()
 
         if selected_mode == "Noise & Filter":
             noise_config = {
@@ -215,11 +236,32 @@ class ParametersPanel(QWidget):
             
             self.current_group_boxes.append(self.createGroupBox(edge_config))
 
+        elif selected_mode == "Frequency Domain Filter":
+            edge_config = {
+                'title': 'Frequency Domain Filter',
+                'type_selector': {
+                    'label': 'Frequency Filter:',
+                    'options': ['High Pass Filter','Low Pass Filter'],
+                    'controls': {
+                        'High Pass Filter': [
+                            {'label': 'CutOff Freq:', 'type': 'slider', 'range': (0, 100)}
+                        ],
+                        'Low Pass Filter': [
+                            {'label': 'CutOff Freq:', 'type': 'slider', 'range': (0, 100),'default': 70}
+                        ]
+                    }
+                }
+            }    
+            self.current_group_boxes.append(self.createGroupBox(edge_config))
+
         for group_box in self.current_group_boxes:
             self.parameter_panel.addWidget(group_box)
 
         self.parameter_panel.addStretch()
         self.adjustSize()
+
+        if self.parameters:
+            self.parameter_changed.emit(self.parameters)
 
 if __name__ == "__main__":
     from PyQt5.QtWidgets import QApplication, QMainWindow

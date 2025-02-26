@@ -11,14 +11,14 @@ class ModeSelector(QWidget):
         self.buttons = {}
       
         button_names = {
+            "Gray/Color": "Gray/Color",
             "Noise and Filtering": "Noise & Filter",
             "Edge Detection": "Edge Detection",
             "Threshold": "Threshold",
+            "Frequency Domain Filter": "Frequency Domain Filter",
             "Color Processing": "Color Processing",
             "Hybrid Images": "Hybrid Images",
-            "Gray/Color": "Gray/Color",
             "Histogram": "Histogram",
-            "Frequency Domain": "Frequency Domain",
             "Equalize": "Equalize",
             "Normalize": "Normalize"
         }
