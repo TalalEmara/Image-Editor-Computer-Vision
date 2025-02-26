@@ -68,25 +68,25 @@ COMBO_BOX_STYLE = f"""
 """
 
 SPIN_BOX_STYLE = f"""
-    QSpinBox {{
+    QSpinBox ,QDoubleSpinBox{{
         background-color: {BOX_BACKGROUND};
         color: {WHITE_COLOR};
         border: 2px solid {ACCENT_COLOR};
         border-radius: 4px;
         padding: 2px 6px;
     }}
-    QSpinBox:hover {{
+    QSpinBox:hover, QDoubleSpinBox:hover {{
         border: 2px solid {ACCENT_HOVER};
     }}
 """
 
 SLIDER_STYLE = f"""
-    QSlider::groove:horizontal {{
+    QSlider::groove:horizontal, QRangeSlider::groove:horizontal{{
         background: {SELECTION_COLOR};
         height: 6px;
         border-radius: 3px;
     }}
-    QSlider::handle:horizontal {{
+    QSlider::handle:horizontal ,QRangeSlider::handle:horizontal{{
         background: {ACCENT_COLOR};
         border: 1px solid {ACCENT_HOVER};
         width: 14px;
@@ -94,16 +94,16 @@ SLIDER_STYLE = f"""
         border-radius: 7px;
         margin: -4px 0;
     }}
-    QSlider::handle:horizontal:hover {{
+    QSlider::handle:horizontal:hover,QRangeSlider::handle:horizontal:hover {{
         background: {ACCENT_HOVER};
         border: 2px solid {ACCENT_COLOR};
     }}
-    QSlider::sub-page:horizontal {{
+    QSlider::sub-page:horizontal,QRangeSlider::sub-page:horizontal {{
         background: {ACCENT_COLOR};
         border-radius: 3px;
         height: 6px;
     }}
-    QSlider::add-page:horizontal {{
+    QSlider::add-page:horizontal,QRangeSlider::add-page:horizontal {{
         background: {SELECTION_COLOR};
         border-radius: 3px;
         height: 6px;

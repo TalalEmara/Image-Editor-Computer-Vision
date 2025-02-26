@@ -1,4 +1,9 @@
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QHBoxLayout
+import sys
+if __name__ == '__main__':
+    import sys
+    app = QApplication(sys.argv)
+    
 from GUI.modes import ModeSelector
 from GUI.parameters_Panel import ParametersPanel
 from GUI.ImageViewer import ImageViewer
@@ -70,6 +75,7 @@ class ImageProcessingApp(QMainWindow):
         self.processImage()
 
     def processImage(self):
+        
         output_image = self.input_image.copy()
     
         if self.current_mode == "Frequency Domain Filter":
@@ -91,6 +97,25 @@ class ImageProcessingApp(QMainWindow):
 
         elif self.current_mode=="Gray/Color":
             output_image=rgb_to_grayscale(self.input_image)
+        
+        elif self.current_mode == "Noise & Filter":
+            if "Noise" in self.current_parameters:
+                noise_type = self.current_parameters.get("Noise")
+
+                if noise_type == "Uniform":
+                    min_val = self.current_parameters.get("Min:", -50)
+                    max_val = self.current_parameters.get("Max:", 50)
+                    output_image = add_uniform_noise(output_image, (min_val, max_val))
+
+                elif noise_type == "Gaussian":
+                    mean = self.current_parameters.get("Mean:", 0)
+                    std_dev = self.current_parameters.get("Std Dev:", 10)
+                    output_image = add_gaussian_noise(output_image, mean, std_dev)
+
+                elif noise_type == "Salt & Pepper":
+                    prob = self.current_parameters.get("prob:", 0.01)
+                    salt_ratio = self.current_parameters.get("salt ratio:", 0.5)
+                    output_image = add_salt_pepper_noise(output_image, prob, salt_ratio)
 
 
         self.outputViewer.setImage(output_image)
@@ -106,9 +131,7 @@ class ImageProcessingApp(QMainWindow):
     #     # image = add_HighPass_filter(image, 1)
     #     # self.outputViewer.setImage(image)
 
-if __name__ == '__main__':
-    import sys
-    app = QApplication(sys.argv)
-    window = ImageProcessingApp()
-    window.show()
-    sys.exit(app.exec_())
+
+window = ImageProcessingApp()
+window.show()
+sys.exit(app.exec_())
