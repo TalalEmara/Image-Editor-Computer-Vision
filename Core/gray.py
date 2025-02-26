@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-image_path = "../images/catty.jpg"
+image_path = "images/colored.jpg"
 
 
 image_RGB = cv2.imread(image_path, cv2.COLOR_BGR2RGB)
@@ -37,26 +37,26 @@ def prepare_for_display(image):
     return ((image - min_val) / (max_val - min_val) * 255).astype(np.uint8)
 
 
-# Convert to grayscale
-grayscale_img = rgb_to_grayscale(image_RGB)
+# # Convert to grayscale
+# grayscale_img = rgb_to_grayscale(image_RGB)
 
 
-# Apply normalization
-normalized_img = normalize_image(grayscale_img)
-display_img = prepare_for_display(normalized_img)
+# # Apply normalization
+# normalized_img = normalize_image(grayscale_img)
+# display_img = prepare_for_display(normalized_img)
 
-# Display results
-fig, axes = plt.subplots(1, 3, figsize=(15, 5))
-axes[0].imshow(grayscale_img, cmap='gray')
-axes[0].set_title("Grayscale Image")
-axes[1].imshow(normalized_img, cmap='gray')
-axes[1].set_title("Normalized Image")
+# # Display results
+# fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+# axes[0].imshow(grayscale_img, cmap='gray')
+# axes[0].set_title("Grayscale Image")
+# axes[1].imshow(normalized_img, cmap='gray')
+# axes[1].set_title("Normalized Image")
 
-axes[2].imshow(normalized_img, cmap='seismic')
+# axes[2].imshow(normalized_img, cmap='seismic')
 
-axes[2].set_title("Normalized Image (Without Rescaling)")
+# axes[2].set_title("Normalized Image (Without Rescaling)")
 
-for ax in axes:
-    ax.axis("off")
+# for ax in axes:
+#     ax.axis("off")
 
-plt.show()
+# plt.show()

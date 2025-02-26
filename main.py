@@ -4,6 +4,7 @@ from GUI.modes import ModeSelector
 from GUI.parameters_Panel import ParametersPanel
 from GUI.ImageViewer import ImageViewer
 from Core.NoiseAdder import add_uniform_noise,add_gaussian_noise,add_salt_pepper_noise
+from Core.frequencyFilter import add_HighPass_filter, add_LowPass_filter
 
 class ImageProcessingApp(QMainWindow):
     def __init__(self):
@@ -46,8 +47,14 @@ class ImageProcessingApp(QMainWindow):
 
         print("Ui connected")
     def processImage(self,image):
+        # test noise
         image = add_gaussian_noise(image, 2,100)
         self.outputViewer.setImage(image)
+
+        #test frequency filters
+        # image = add_LowPass_filter(image, 99)
+        # image = add_HighPass_filter(image, 1)
+        # self.outputViewer.setImage(image)
 
 if __name__ == '__main__':
     import sys
