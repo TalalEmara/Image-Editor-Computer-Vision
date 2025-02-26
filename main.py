@@ -4,6 +4,9 @@ from GUI.parameters_Panel import ParametersPanel
 from GUI.ImageViewer import ImageViewer
 from Core.NoiseAdder import add_uniform_noise, add_gaussian_noise, add_salt_pepper_noise
 from Core.frequencyFilter import add_HighPass_filter, add_LowPass_filter
+from Core.equalize import equalization, show_equalized_histograms
+from Core.histogram import show_histograms
+from Core.gray import rgb_to_grayscale
 import cv2
 import numpy as np
 
@@ -68,8 +71,7 @@ class ImageProcessingApp(QMainWindow):
 
     def processImage(self):
         output_image = self.input_image.copy()
-        
-      
+    
         if self.current_mode == "Frequency Domain Filter":
             if "Frequency Domain Filter" in self.current_parameters:
                 filter_type = self.current_parameters.get("Frequency Domain Filter")
@@ -80,6 +82,11 @@ class ImageProcessingApp(QMainWindow):
                 elif filter_type == "High Pass Filter":
                     output_image = add_HighPass_filter(output_image, cut_off)
         
+        elif self.current_mode == "Equalization":
+            output_image = equalization(self.input_image)
+            show_equalized_histograms(output_image)
+
+     
         self.outputViewer.setImage(output_image)
 
 

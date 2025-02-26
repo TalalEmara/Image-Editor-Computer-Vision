@@ -19,7 +19,7 @@ class ModeSelector(QWidget):
             "Color Processing": "Color Processing",
             "Hybrid Images": "Hybrid Images",
             "Histogram": "Histogram",
-            "Equalize": "Equalize",
+            "Equalization": "Equalization",
             "Normalize": "Normalize"
         }
         

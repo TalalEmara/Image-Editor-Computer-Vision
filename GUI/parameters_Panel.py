@@ -1,13 +1,13 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QGroupBox, QLabel, QComboBox, QSlider, 
+    QWidget, QVBoxLayout, QGroupBox, QLabel, QComboBox, QSlider, QPushButton,
     QSpinBox, QHBoxLayout, QSizePolicy
 )
 from PyQt5.QtCore import pyqtSignal
 
 from GUI.styles import (
     GENERAL_STYLE, GROUP_BOX_STYLE, LABEL_STYLE, 
-    COMBO_BOX_STYLE, SLIDER_STYLE, SPIN_BOX_STYLE
+    COMBO_BOX_STYLE, SLIDER_STYLE, SPIN_BOX_STYLE,BUTTON_STYLE
 )
 
 
@@ -244,10 +244,10 @@ class ParametersPanel(QWidget):
                     'options': ['High Pass Filter','Low Pass Filter'],
                     'controls': {
                         'High Pass Filter': [
-                            {'label': 'CutOff Freq:', 'type': 'slider', 'range': (0, 100)}
+                            {'label': 'CutOff Freq:', 'type': 'slider', 'range': (1, 100)}
                         ],
                         'Low Pass Filter': [
-                            {'label': 'CutOff Freq:', 'type': 'slider', 'range': (0, 100),'default': 70}
+                            {'label': 'CutOff Freq:', 'type': 'slider', 'range': (1, 100),'default': 70}
                         ]
                     }
                 }
