@@ -94,9 +94,10 @@ class ImageProcessingApp(QMainWindow):
             show_equalized_histograms(output_image)
 
         elif self.current_mode=="Histogram":
-            output_image=show_histograms(self.input_image)
+            output_image=self.input_image
+            show_histograms(self.input_image)
 
-        elif self.current_mode=="Gray/Color":
+        elif self.current_mode=="Gray":
             output_image=rgb_to_grayscale(self.input_image)
         
         elif self.current_mode == "Noise & Filter":
@@ -129,7 +130,8 @@ class ImageProcessingApp(QMainWindow):
                     output_image = gaussian_filter(output_image, kernel_size, sigma)
                 elif filter_type == "Median":
                     output_image = median_filter(output_image, kernel_size)
-                self.outputViewer.setImage(output_image)
+        
+        self.outputViewer.setImage(output_image)
 
 
     # def processImage(self,image):
