@@ -24,6 +24,8 @@ class ImageProcessingApp(QMainWindow):
         self.current_mode = None
         self.current_parameters = {}
         self.original_image = None
+
+        self.input_image = None
         
         self.initializeUI()
         self.connectUI()
@@ -84,8 +86,10 @@ class ImageProcessingApp(QMainWindow):
     
     def onParameterChanged(self, parameters):
         self.current_parameters = parameters
-        if self.input_image is not None:
+        if self.input_image:
             self.processImage()
+        else:
+            pass
     
     def onImageChanged(self, image):
         self.input_image = image.copy()
