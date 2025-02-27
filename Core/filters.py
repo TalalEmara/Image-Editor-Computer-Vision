@@ -1,8 +1,8 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-import gray
-import NoiseAdder
+from Core.gray import rgb_to_grayscale
+import Core.NoiseAdder
 def replicate_padding(image, pad_size):
     """Apply replicate padding to an image."""
     h, w = image.shape
@@ -27,6 +27,7 @@ def replicate_padding(image, pad_size):
 
 def average_filter(image, kernel_size=5):
     """Apply an average filter."""
+    image = rgb_to_grayscale(image)
     pad_size = kernel_size // 2
     padded_image = replicate_padding(image, pad_size)
     filtered_image = np.zeros_like(image)
@@ -47,6 +48,7 @@ def gaussian_kernel(size, sigma=1):
 
 def gaussian_filter(image, kernel_size=5, sigma=1.5):
     """Apply a Gaussian filter."""
+    image = rgb_to_grayscale(image)
     pad_size = kernel_size // 2
     padded_image = replicate_padding(image, pad_size)
     filtered_image = np.zeros_like(image)
@@ -61,6 +63,7 @@ def gaussian_filter(image, kernel_size=5, sigma=1.5):
 
 def median_filter(image, kernel_size=5):
     """Apply a median filter."""
+    image = rgb_to_grayscale(image)
     pad_size = kernel_size // 2
     padded_image = replicate_padding(image, pad_size)
     filtered_image = np.zeros_like(image)
@@ -72,30 +75,31 @@ def median_filter(image, kernel_size=5):
 
     return filtered_image.astype(np.uint8)
 
+##TEST
 # Load a sample grayscale image
-image_path = "../images/catty.jpg"
+# image_path = "images/catty.jpg"
 
 
-image_RGB = cv2.imread(image_path, cv2.COLOR_BGR2RGB)
-gray_image = gray.rgb_to_grayscale(image_RGB)
-image = NoiseAdder.add_gaussian_noise(gray_image)
-# Apply filters
-avg_filtered = average_filter(image, kernel_size=3)
-gaussian_filtered = gaussian_filter(image, kernel_size=3, sigma=1)
-median_filtered = median_filter(image, kernel_size=3)
+# image_RGB = cv2.imread(image_path, cv2.COLOR_BGR2RGB)
+# gray_image = gray.rgb_to_grayscale(image_RGB)
+# image = NoiseAdder.add_gaussian_noise(gray_image)
+# # Apply filters
+# avg_filtered = average_filter(image, kernel_size=3)
+# gaussian_filtered = gaussian_filter(image, kernel_size=3, sigma=1)
+# median_filtered = median_filter(image, kernel_size=3)
 
 # Display results
-fig, axes = plt.subplots(1, 4, figsize=(12, 4))
-axes[0].imshow(image, cmap='gray')
-axes[0].set_title("Original Image")
-axes[1].imshow(avg_filtered, cmap='gray')
-axes[1].set_title("Average Filtered")
-axes[2].imshow(gaussian_filtered, cmap='gray')
-axes[2].set_title("Gaussian Filtered")
-axes[3].imshow(median_filtered, cmap='gray')
-axes[3].set_title("Median Filtered")
+# fig, axes = plt.subplots(1, 4, figsize=(12, 4))
+# axes[0].imshow(image, cmap='gray')
+# axes[0].set_title("Original Image")
+# axes[1].imshow(avg_filtered, cmap='gray')
+# axes[1].set_title("Average Filtered")
+# axes[2].imshow(gaussian_filtered, cmap='gray')
+# axes[2].set_title("Gaussian Filtered")
+# axes[3].imshow(median_filtered, cmap='gray')
+# axes[3].set_title("Median Filtered")
 
-for ax in axes:
-    ax.axis("off")
+# for ax in axes:
+#     ax.axis("off")
 
-plt.show()
+# plt.show()

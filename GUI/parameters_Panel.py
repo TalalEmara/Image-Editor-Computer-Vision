@@ -1,4 +1,4 @@
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt,QTimer
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QGroupBox, QLabel, QComboBox, QSlider, QPushButton,
     QSpinBox, QHBoxLayout, QSizePolicy,QDoubleSpinBox
@@ -22,11 +22,18 @@ class ParametersPanel(QWidget):
         self.parameter_panel.setContentsMargins(0, 0, 0, 0)
         self.current_group_boxes = []
         self.parameters = {}
+        self.timer = QTimer()
+        self.timer.setSingleShot(True)
+        self.timer.timeout.connect(self.emit_parameters)
+
         self.setupUI()
 
     def update_parameter(self, key, value):
         self.parameters[key] = value
-        self.parameter_changed.emit(self.parameters)
+        self.timer.start(50)
+
+    def emit_parameters(self):
+        self.parameter_changed.emit(self.parameters)    
 
     def setupUI(self):
         self.setSizePolicy(

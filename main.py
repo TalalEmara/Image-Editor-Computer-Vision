@@ -11,6 +11,7 @@ from Core.NoiseAdder import add_uniform_noise, add_gaussian_noise, add_salt_pepp
 from Core.frequencyFilter import add_HighPass_filter, add_LowPass_filter
 from Core.equalize import equalization, show_equalized_histograms
 from Core.histogram import show_histograms
+from Core.filters import average_filter, gaussian_filter, median_filter
 from Core.gray import rgb_to_grayscale
 import cv2
 import numpy as np
@@ -117,8 +118,18 @@ class ImageProcessingApp(QMainWindow):
                     salt_ratio = self.current_parameters.get("salt ratio:", 0.5)
                     output_image = add_salt_pepper_noise(output_image, prob, salt_ratio)
 
+            if "Noise Filter" in self.current_parameters:
+                filter_type = self.current_parameters.get("Noise Filter")
+                kernel_size = self.current_parameters.get("Kernel Size:", 5)
 
-        self.outputViewer.setImage(output_image)
+                if filter_type == "Average":
+                    output_image = average_filter(output_image, kernel_size)
+                elif filter_type == "Gaussian":
+                    sigma = self.current_parameters.get("Sigma:", 1.5)
+                    output_image = gaussian_filter(output_image, kernel_size, sigma)
+                elif filter_type == "Median":
+                    output_image = median_filter(output_image, kernel_size)
+                self.outputViewer.setImage(output_image)
 
 
     # def processImage(self,image):
