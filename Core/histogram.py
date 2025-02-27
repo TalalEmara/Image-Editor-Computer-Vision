@@ -3,9 +3,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from Core.gray import rgb_to_grayscale
 
-image_path = "CV/Image-Editor-Computer-Vision/images/catty.jpg"
-image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-imageRGB = cv2.imread(image_path, cv2.COLOR_BGR2RGB)
 
 def histogramGS(image):
     """
@@ -71,6 +68,7 @@ def show_histograms(image):
     axes[2].legend()
 
     plt.tight_layout()
+    plt.ion()
     plt.show()
 
 # show_histograms(imageRGB)

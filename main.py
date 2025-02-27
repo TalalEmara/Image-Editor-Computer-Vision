@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QHBoxLayout
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QHBoxLayout, QVBoxLayout
 import sys
 if __name__ == '__main__':
     import sys
@@ -20,6 +20,7 @@ class ImageProcessingApp(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Image Processing")
+        self.resize(int(1920*4/5), int(1080*4/5))
         self.current_mode = None
         self.current_parameters = {}
         self.original_image = None
@@ -30,23 +31,37 @@ class ImageProcessingApp(QMainWindow):
 
     def initializeUI(self):
         self.modes_panel = ModeSelector()
+
         self.parameters_panel = ParametersPanel()
         self.mainInputViewer = ImageViewer()
 
         self.outputViewer = ImageViewer()
         self.outputViewer.setReadOnly(True)
-        self.mainInputViewer.setFixedSize(300, 400)
-        self.outputViewer.setFixedSize(300, 400)
+
+        self.mainInputViewer.setFixedWidth(int(self.width()*2/5))
+        self.outputViewer.setFixedWidth(int(self.width()*2/5))
 
         main_widget = QWidget()
+
+
         self.setCentralWidget(main_widget)
         main_layout = QHBoxLayout(main_widget)
 
-        main_layout.addLayout(self.modes_panel.createmodePanel())
-        main_layout.addWidget(self.mainInputViewer)
-        main_layout.addWidget(self.outputViewer)
-        main_layout.addWidget(self.parameters_panel)
+        modesLayout = QVBoxLayout()
+        modesLayout.addLayout(self.modes_panel.createmodePanel())
+        modesLayout.addWidget(self.parameters_panel)
 
+        imagesLayout = QHBoxLayout()
+        inputLayout = QVBoxLayout()
+        outputLayout = QVBoxLayout()
+        inputLayout.addWidget(self.mainInputViewer,50)
+        outputLayout.addWidget(self.outputViewer,50)
+        imagesLayout.addLayout(inputLayout)
+        imagesLayout.addLayout(outputLayout)
+
+
+        main_layout.addLayout(modesLayout,20)
+        main_layout.addLayout(imagesLayout,80)
         print("UI components initialized")
 
     def connectUI(self):

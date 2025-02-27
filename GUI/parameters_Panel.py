@@ -43,8 +43,11 @@ class ParametersPanel(QWidget):
         self.stylingUi(self)
 
     def stylingUi(self, widget):
-       
         self.setStyleSheet(GENERAL_STYLE)
+        #debug function
+        # self.setAttribute(Qt.WA_StyledBackground, True)
+        # self.setStyleSheet("background-color:#2D2D2D;")
+
         self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Minimum)
         self.parameter_panel.setAlignment(Qt.AlignTop) 
 

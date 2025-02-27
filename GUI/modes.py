@@ -1,5 +1,5 @@
-from PyQt5.QtWidgets import QVBoxLayout, QGroupBox, QPushButton, QWidget
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QVBoxLayout, QGroupBox, QPushButton, QWidget, QGridLayout
+from PyQt5.QtCore import pyqtSignal, Qt
 from GUI.styles import BUTTON_STYLE, GROUP_BOX_STYLE, GENERAL_STYLE
 
 class ModeSelector(QWidget):
@@ -16,10 +16,10 @@ class ModeSelector(QWidget):
             "Frequency Domain Filter": "Frequency Domain Filter",
             "Edge Detection": "Edge Detection",
             "Threshold": "Threshold",
-            "Hybrid Images": "Hybrid Images",
             "Histogram": "Histogram",
             "Equalization": "Equalization",
-            "Normalize": "Normalize"
+            "Normalize": "Normalize",
+            "Hybrid Images": "Hybrid Images"
         }
         
         for display_name, signal_name in button_names.items():
@@ -43,17 +43,42 @@ class ModeSelector(QWidget):
         self.setStyleSheet(GENERAL_STYLE)
         Mode_panel = QVBoxLayout()
 
+
         operations_group = QGroupBox("Modes")
         operations_group.setStyleSheet(GROUP_BOX_STYLE)
-        operations_layout = QVBoxLayout()
+
+        # operations_layout = QVBoxLayout()
+        operations_layout = QGridLayout()
+
         operations_layout.setSpacing(8)
         operations_layout.setContentsMargins(10, 15, 10, 10)
 
+        # for mode_name in self.buttons:
+        #     operations_layout.addWidget(self.buttons[mode_name])
+
+        row, col = 0, 0
+        counter = 0
+
         for mode_name in self.buttons:
-            operations_layout.addWidget(self.buttons[mode_name])
+            button = self.buttons[mode_name]
+
+            if counter == len(self.buttons) - 1:  # If it's the last button, span 2 columns
+                operations_layout.addWidget(button, row, 0, 1, 2)
+            else:
+                operations_layout.addWidget(button, row, col)
+                col += 1
+                if col > 1:
+                    col = 0
+                    row += 1
+
+            counter += 1
 
         operations_group.setLayout(operations_layout)
         Mode_panel.addWidget(operations_group)
+
+        # debug function
+        # operations_group.setAttribute(Qt.WA_StyledBackground, True)
+        # operations_group.setStyleSheet("background-color:#2D2D2D;")
 
         Mode_panel.addStretch()
         return Mode_panel

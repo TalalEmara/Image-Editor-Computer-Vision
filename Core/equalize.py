@@ -1,26 +1,69 @@
+
 import numpy as np
 import matplotlib.pyplot as plt
 from Core.histogram import histogramGS, distribution, histogramRGB
+from Core.gray import rgb_to_grayscale  
 
+def cumulative_summation(histogram):
+    return np.cumsum(histogram)
+
+def rgb_to_yuv(image):
+    """Convert an RGB image to YUV color space using NumPy."""
+    matrix = np.array([[0.299, 0.587, 0.114],
+                       [-0.14713, -0.28886, 0.436],
+                       [0.615, -0.51499, -0.10001]])
+    return np.dot(image, matrix.T)
+
+def yuv_to_rgb(yuv):
+    """Convert a YUV image back to RGB using NumPy."""
+    matrix = np.array([[1.0, 0.0, 1.13983],
+                       [1.0, -0.39465, -0.58060],
+                       [1.0, 2.03211, 0.0]])
+    return np.dot(yuv, matrix.T)
 
 def equalization(image):
-    grayScale, histogram = histogramGS(image)
+    """
+    Applies histogram equalization to grayscale and color images (using YUV space for color).
+    
+    Parameters:
+    - image: numpy array (grayscale or RGB)
+    
+    Returns:
+    - equalized_image: numpy array (same shape as input)
+    """
+    
+    if image.ndim == 2:  # Grayscale image
+        imageGS = image  # Already grayscale
+    else:  # Convert RGB to grayscale for histogram computation
+        imageGS = rgb_to_grayscale(image)
 
-    # Calculate CDF
-    cdf = np.cumsum(histogram)
-    
-    # Mask all pixels in the CDF with '0' intensity
-    cdf_masked = np.ma.masked_equal(cdf, 0)
-    
-    # Equalize the histogram by scaling the CDF
-    cdf_masked = (cdf_masked - cdf_masked.min()) * 255 / (cdf_masked.max() - cdf_masked.min())
-    
-    # Fill masked pixels with '0'
-    cdf = np.ma.filled(cdf_masked, 0).astype('uint8')
-    
-    equalized_image = cdf[image]
-    
-    return equalized_image
+    histogram, _ = np.histogram(imageGS.flatten(), 256, [0, 256])
+
+    # Compute CDF
+    cdf = cumulative_summation(histogram)
+    cdf = (cdf - cdf.min()) * 255 / (cdf.max() - cdf.min())
+    cdf = np.ma.filled(cdf, 0).astype(np.uint8)
+
+    if image.ndim == 2:  # Grayscale image equalization
+        equalized_image = cdf[imageGS]
+        return equalized_image
+    else:  # Color image, process in YUV space
+        yuv = rgb_to_yuv(image.astype(np.float32) / 255.0)  # Normalize to [0, 1]
+
+        Y_channel = (yuv[:, :, 0] * 255).astype(np.uint8)  # Extract Y channel (brightness)
+
+        # Equalize the Y channel
+        Y_equalized = cdf[Y_channel] / 255.0  # Normalize back to [0, 1]
+
+        # Replace equalized Y channel back
+        yuv[:, :, 0] = Y_equalized
+
+        # Convert back to RGB
+        equalized_image = yuv_to_rgb(yuv) * 255  # Scale back to 0-255
+        equalized_image = np.clip(equalized_image, 0, 255).astype(np.uint8)  # Ensure valid range
+
+        return equalized_image
+
 
 def show_equalized_histograms(equalized_image):
     
@@ -59,4 +102,5 @@ def show_equalized_histograms(equalized_image):
     axes[3].legend()
 
     plt.tight_layout()
+    plt.ion()
     plt.show()
