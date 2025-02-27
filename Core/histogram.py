@@ -61,7 +61,7 @@ def show_histograms(image):
     axes[1].set_ylabel("PDF")
 
     # Plot 3: RGB Histogram
-    red, green, blue = histogramRGB(imageRGB)
+    red, green, blue = histogramRGB(image)
     axes[2].plot(red, color="red", label="Red")
     axes[2].plot(green, color="green", label="Green")
     axes[2].plot(blue, color="blue", label="Blue")

@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 from Core.gray import rgb_to_grayscale
-import Core.NoiseAdder
+
 def replicate_padding(image, pad_size):
     """Apply replicate padding to an image."""
     h, w = image.shape
