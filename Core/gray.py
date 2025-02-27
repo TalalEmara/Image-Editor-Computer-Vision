@@ -2,10 +2,10 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-image_path = "images/colored.jpg"
+# image_path = "images/colored.jpg"
 
 
-image_RGB = cv2.imread(image_path, cv2.COLOR_BGR2RGB)
+# image_RGB = cv2.imread(image_path, cv2.COLOR_BGR2RGB)
 
 
 
