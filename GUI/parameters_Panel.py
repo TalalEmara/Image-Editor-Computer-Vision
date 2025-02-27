@@ -6,14 +6,12 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import pyqtSignal
 
 from GUI.styles import (
-    GENERAL_STYLE, GROUP_BOX_STYLE, LABEL_STYLE, 
+    GENERAL_STYLE, GROUP_BOX_STYLE, LABEL_STYLE,
     COMBO_BOX_STYLE, SLIDER_STYLE, SPIN_BOX_STYLE,BUTTON_STYLE
 )
 
-from qtrangeslider import QRangeSlider
-
 class ParametersPanel(QWidget):
-    parameter_changed = pyqtSignal(dict)  
+    parameter_changed = pyqtSignal(dict)
 
 
     def __init__(self, parent=None):
@@ -33,30 +31,30 @@ class ParametersPanel(QWidget):
         self.timer.start(50)
 
     def emit_parameters(self):
-        self.parameter_changed.emit(self.parameters)    
+        self.parameter_changed.emit(self.parameters)
 
     def setupUI(self):
-        self.setSizePolicy(
-            QSizePolicy.Preferred,
-            QSizePolicy.Minimum
-        )
+        # self.setSizePolicy(
+        #     QSizePolicy.Preferred,
+        #     QSizePolicy.Minimum
+        # )
         self.stylingUi(self)
 
     def stylingUi(self, widget):
         self.setStyleSheet(GENERAL_STYLE)
-        #debug function
+        # debug function
         # self.setAttribute(Qt.WA_StyledBackground, True)
         # self.setStyleSheet("background-color:#2D2D2D;")
 
-        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Minimum)
-        self.parameter_panel.setAlignment(Qt.AlignTop) 
+        # self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Minimum)
+        self.parameter_panel.setAlignment(Qt.AlignTop)
 
         for group_box in self.findChildren(QGroupBox):
             group_box.setStyleSheet(GROUP_BOX_STYLE)
 
         for label in self.findChildren(QLabel):
             label.setStyleSheet(LABEL_STYLE)
-        
+
         for combo in self.findChildren(QComboBox):
             combo.setStyleSheet(COMBO_BOX_STYLE)
 
@@ -65,37 +63,37 @@ class ParametersPanel(QWidget):
 
         for spinbox in self.findChildren(QSpinBox):
             spinbox.setStyleSheet(SPIN_BOX_STYLE)
-       
-    
+
+
     def createSliderWithSpinBox(self, label_text, min_val, max_val):
         container = QWidget()
         layout = QHBoxLayout(container)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(5)
-        
+
         label = QLabel(label_text)
         label.setMinimumWidth(100)
-     
-        
+
+
         slider = QSlider(Qt.Horizontal)
         slider.setRange(min_val, max_val)
         slider.setMinimumWidth(100)
         slider.setStyleSheet(SLIDER_STYLE)
-        
+
         spinbox = QSpinBox()
         spinbox.setRange(min_val, max_val)
         spinbox.setFixedWidth(70)
         spinbox.setStyleSheet(SPIN_BOX_STYLE)
-        
+
         slider.valueChanged.connect(spinbox.setValue)
         spinbox.valueChanged.connect(slider.setValue)
-        
+
         layout.addWidget(label)
         layout.addWidget(slider)
         layout.addWidget(spinbox)
-        
+
         return container
-    
+
 
     def createDoubleSpinBox(self, label_text, min_val, max_val, step=0.01):
         container = QWidget()
@@ -126,27 +124,27 @@ class ParametersPanel(QWidget):
 
     def createGroupBox(self, config):
         group = QGroupBox(config['title'])
-        group.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Minimum)
+        # group.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Minimum)
         group.setStyleSheet(GROUP_BOX_STYLE)
-        
+
         layout = QVBoxLayout()
         layout.setSpacing(5)
         layout.setContentsMargins(10, 10, 10, 10)
 
         if 'type_selector' in config:
             selector_config = config['type_selector']
-            
+
             type_container = QWidget()
             type_layout = QHBoxLayout(type_container)
             type_layout.setContentsMargins(0, 0, 0, 0)
-            
+
             type_label = QLabel(selector_config['label'])
             type_label.setStyleSheet(LABEL_STYLE)
-            
+
             type_combo = QComboBox()
             type_combo.addItems(selector_config['options'])
             type_combo.setStyleSheet(COMBO_BOX_STYLE)
-            
+
             type_layout.addWidget(type_label)
             type_layout.addWidget(type_combo)
             layout.addWidget(type_container)
@@ -179,7 +177,7 @@ class ParametersPanel(QWidget):
                             spinbox.valueChanged.connect(emit_parameter_change)
                             self.update_parameter(control['label'], spinbox.value())
 
-                        elif control['type'] == 'doubleSpin': 
+                        elif control['type'] == 'doubleSpin':
                             control_widget = self.createDoubleSpinBox(
                                 control['label'],
                                 control['range'][0],
@@ -188,18 +186,18 @@ class ParametersPanel(QWidget):
                             )
                             controls_layout.addWidget(control_widget)
 
-                            spinbox = control_widget.findChildren(QDoubleSpinBox)[0] 
+                            spinbox = control_widget.findChildren(QDoubleSpinBox)[0]
 
                             def emit_parameter_change():
-                                self.update_parameter(control['label'], spinbox.value())  
+                                self.update_parameter(control['label'], spinbox.value())
 
-                            spinbox.valueChanged.connect(emit_parameter_change)  
-                            self.update_parameter(control['label'], spinbox.value()) 
-                    
-                controls_widget.adjustSize()
-                group.adjustSize()
-                self.adjustSize()
-            
+                            spinbox.valueChanged.connect(emit_parameter_change)
+                            self.update_parameter(control['label'], spinbox.value())
+
+                # controls_widget.adjustSize()
+                # group.adjustSize()
+                # self.adjustSize()
+
             type_combo.currentTextChanged.connect(lambda text: self.update_parameter(config['title'], text))
             type_combo.currentTextChanged.connect(updateControls)
 
@@ -216,6 +214,7 @@ class ParametersPanel(QWidget):
             group_box.setParent(None)
             group_box.deleteLater()
         self.current_group_boxes.clear()
+        self.parameter_panel.takeAt(0)
         self.parameters.clear()
 
         if selected_mode == "Noise & Filter":
@@ -238,7 +237,7 @@ class ParametersPanel(QWidget):
                     }
                 }
             }
-            
+
             filter_config = {
                 'title': 'Noise Filter',
                 'type_selector': {
@@ -259,10 +258,8 @@ class ParametersPanel(QWidget):
                 }
             }
 
-            self.current_group_boxes.extend([
-                self.createGroupBox(noise_config),
-                self.createGroupBox(filter_config)
-            ])
+            self.current_group_boxes.append(self.createGroupBox(noise_config))
+            self.current_group_boxes.append(self.createGroupBox(filter_config))
 
         elif selected_mode == "Edge Detection":
             edge_config = {
@@ -287,7 +284,7 @@ class ParametersPanel(QWidget):
                     }
                 }
             }
-            
+
             self.current_group_boxes.append(self.createGroupBox(edge_config))
 
         elif selected_mode == "Frequency Domain Filter":
@@ -305,21 +302,21 @@ class ParametersPanel(QWidget):
                         ]
                     }
                 }
-            }    
+            }
             self.current_group_boxes.append(self.createGroupBox(edge_config))
 
         for group_box in self.current_group_boxes:
             self.parameter_panel.addWidget(group_box)
 
         self.parameter_panel.addStretch()
-        self.adjustSize()
+        # self.adjustSize()
 
         if self.parameters:
             self.parameter_changed.emit(self.parameters)
 
 
     def createRangeSlider(self, label_text, min_val=-255, max_val=255, default_min=-50, default_max=50):
-     
+
 
         container = QWidget()
         layout = QVBoxLayout(container)
@@ -330,19 +327,19 @@ class ParametersPanel(QWidget):
         label.setMinimumWidth(120)
 
         range_slider = QRangeSlider(Qt.Horizontal)
-        range_slider.setRange(min_val, max_val)  
+        range_slider.setRange(min_val, max_val)
 
-        range_slider.setValue([default_min, default_max])  
+        range_slider.setValue([default_min, default_max])
 
         def update_range():
-            min_value, max_value = range_slider.value()  
-            if min_value >= max_value: 
+            min_value, max_value = range_slider.value()
+            if min_value >= max_value:
                 min_value = max_value - 1
                 range_slider.setValue([min_value, max_value])
             self.update_parameter(f"{label_text} Min", min_value)
             self.update_parameter(f"{label_text} Max", max_value)
 
-        range_slider.valueChanged.connect(update_range) 
+        range_slider.valueChanged.connect(update_range)
 
         layout.addWidget(label)
         layout.addWidget(range_slider)
@@ -357,29 +354,31 @@ class ParametersPanel(QWidget):
 
 if __name__ == "__main__":
     from PyQt5.QtWidgets import QApplication, QMainWindow
-    
+
     class MainWindow(QMainWindow):
         def __init__(self):
             super().__init__()
             self.setWindowTitle("Parameters Panel Test")
             self.parameters_panel = ParametersPanel()
             self.setCentralWidget(self.parameters_panel)
-            self.parameters_panel.updateGroupBox("Noise & Filter") 
-            # self.parameters_panel.updateGroupBox("Edge Detection") 
+            self.parameters_panel.updateGroupBox("Noise & Filter")
+            # self.parameters_panel.updateGroupBox("Edge Detection")
             self.setStyleSheet("""
                 
                 QMainWindow {
                     background-color: #1E1E2E;
                 }
             """)
-    
+
     app = QApplication([])
     mainWin = MainWindow()
     mainWin.show()
     app.exec_()
 
 
-    ##if i want to access each one alone I think this is better but comment it inistially 
+    ##if i want to access each one alone I think this is better but comment it inistially
+
+from qtrangeslider import QRangeSlider
 
 # from PyQt5.QtCore import Qt, pyqtSignal
 # from PyQt5.QtWidgets import (

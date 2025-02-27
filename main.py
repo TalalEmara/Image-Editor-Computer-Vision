@@ -50,6 +50,7 @@ class ImageProcessingApp(QMainWindow):
         modesLayout = QVBoxLayout()
         modesLayout.addLayout(self.modes_panel.createmodePanel())
         modesLayout.addWidget(self.parameters_panel)
+        modesLayout.addStretch()
 
         imagesLayout = QHBoxLayout()
         inputLayout = QVBoxLayout()
