@@ -23,7 +23,7 @@ def add_uniform_noise(image, noise_range=(-50, 50), grayscale=False):
     return noisy_image
 
 
-def add_gaussian_noise(image, mean=0, std_dev=10):
+def add_gaussian_noise(image, mean=0, std_dev=50):
     """
     Adds Gaussian noise to an image.
 

@@ -1,15 +1,16 @@
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt,QTimer
 from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QGroupBox, QLabel, QComboBox, QSlider, 
-    QSpinBox, QHBoxLayout, QSizePolicy
+    QWidget, QVBoxLayout, QGroupBox, QLabel, QComboBox, QSlider, QPushButton,
+    QSpinBox, QHBoxLayout, QSizePolicy,QDoubleSpinBox
 )
 from PyQt5.QtCore import pyqtSignal
 
 from GUI.styles import (
     GENERAL_STYLE, GROUP_BOX_STYLE, LABEL_STYLE, 
-    COMBO_BOX_STYLE, SLIDER_STYLE, SPIN_BOX_STYLE
+    COMBO_BOX_STYLE, SLIDER_STYLE, SPIN_BOX_STYLE,BUTTON_STYLE
 )
 
+from qtrangeslider import QRangeSlider
 
 class ParametersPanel(QWidget):
     parameter_changed = pyqtSignal(dict)  
@@ -21,11 +22,18 @@ class ParametersPanel(QWidget):
         self.parameter_panel.setContentsMargins(0, 0, 0, 0)
         self.current_group_boxes = []
         self.parameters = {}
+        self.timer = QTimer()
+        self.timer.setSingleShot(True)
+        self.timer.timeout.connect(self.emit_parameters)
+
         self.setupUI()
 
     def update_parameter(self, key, value):
         self.parameters[key] = value
-        self.parameter_changed.emit(self.parameters)
+        self.timer.start(50)
+
+    def emit_parameters(self):
+        self.parameter_changed.emit(self.parameters)    
 
     def setupUI(self):
         self.setSizePolicy(
@@ -84,6 +92,34 @@ class ParametersPanel(QWidget):
         layout.addWidget(spinbox)
         
         return container
+    
+
+    def createDoubleSpinBox(self, label_text, min_val, max_val, step=0.01):
+        container = QWidget()
+        layout = QHBoxLayout(container)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(5)
+
+        label = QLabel(label_text)
+        label.setMinimumWidth(100)
+
+        spinbox = QDoubleSpinBox()
+        spinbox.setStyleSheet(SPIN_BOX_STYLE)
+        spinbox.setDecimals(2)
+        spinbox.setSingleStep(step)
+        spinbox.setRange(min_val, max_val)
+        spinbox.setFixedWidth(70)
+
+        def emit_parameter_change():
+            self.update_parameter(label_text, spinbox.value())
+
+        spinbox.valueChanged.connect(emit_parameter_change)
+
+        layout.addWidget(label)
+        layout.addWidget(spinbox)
+
+        return container
+
 
     def createGroupBox(self, config):
         group = QGroupBox(config['title'])
@@ -139,6 +175,23 @@ class ParametersPanel(QWidget):
                             slider.valueChanged.connect(emit_parameter_change)
                             spinbox.valueChanged.connect(emit_parameter_change)
                             self.update_parameter(control['label'], spinbox.value())
+
+                        elif control['type'] == 'doubleSpin': 
+                            control_widget = self.createDoubleSpinBox(
+                                control['label'],
+                                control['range'][0],
+                                control['range'][1],
+                                control.get('step', 0.01)
+                            )
+                            controls_layout.addWidget(control_widget)
+
+                            spinbox = control_widget.findChildren(QDoubleSpinBox)[0] 
+
+                            def emit_parameter_change():
+                                self.update_parameter(control['label'], spinbox.value())  
+
+                            spinbox.valueChanged.connect(emit_parameter_change)  
+                            self.update_parameter(control['label'], spinbox.value()) 
                     
                 controls_widget.adjustSize()
                 group.adjustSize()
@@ -169,17 +222,15 @@ class ParametersPanel(QWidget):
                     'label': 'Noise Type:',
                     'options': ['Uniform', 'Gaussian', 'Salt & Pepper'],
                     'controls': {
-                        'Uniform': [
-                            {'label': 'Min Value:', 'type': 'slider', 'range': (0, 255)},
-                            {'label': 'Max Value:', 'type': 'slider', 'range': (0, 255)}
-                        ],
+                        'Uniform': [{'label': 'Min:', 'type': 'slider', 'range': (-255, 255)},
+                            {'label': 'Max:', 'type': 'slider', 'range': (-255, 255)}],
                         'Gaussian': [
-                            {'label': 'Mean:', 'type': 'slider', 'range': (0, 255)},
-                            {'label': 'Std Dev:', 'type': 'slider', 'range': (0, 50)}
+                            {'label': 'Mean:', 'type': 'slider', 'range': (-50, 50)},
+                            {'label': 'Std Dev:', 'type': 'slider', 'range': (0, 100)}
                         ],
                         'Salt & Pepper': [
-                            {'label': 'Salt:', 'type': 'slider', 'range': (0, 100)},
-                            {'label': 'Pepper:', 'type': 'slider', 'range': (0, 100)}
+                             {'label': 'prob:', 'type': 'doubleSpin', 'range': (0.01, 1.0), 'step': 0.01},
+                    {'label': 'salt ratio:', 'type': 'doubleSpin', 'range': (0.01, 1.0), 'step': 0.01}
                         ]
                     }
                 }
@@ -244,10 +295,10 @@ class ParametersPanel(QWidget):
                     'options': ['High Pass Filter','Low Pass Filter'],
                     'controls': {
                         'High Pass Filter': [
-                            {'label': 'CutOff Freq:', 'type': 'slider', 'range': (0, 100)}
+                            {'label': 'CutOff Freq:', 'type': 'slider', 'range': (1, 100)}
                         ],
                         'Low Pass Filter': [
-                            {'label': 'CutOff Freq:', 'type': 'slider', 'range': (0, 100),'default': 70}
+                            {'label': 'CutOff Freq:', 'type': 'slider', 'range': (1, 100),'default': 70}
                         ]
                     }
                 }
@@ -262,6 +313,44 @@ class ParametersPanel(QWidget):
 
         if self.parameters:
             self.parameter_changed.emit(self.parameters)
+
+
+    def createRangeSlider(self, label_text, min_val=-255, max_val=255, default_min=-50, default_max=50):
+     
+
+        container = QWidget()
+        layout = QVBoxLayout(container)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(5)
+
+        label = QLabel(label_text)
+        label.setMinimumWidth(120)
+
+        range_slider = QRangeSlider(Qt.Horizontal)
+        range_slider.setRange(min_val, max_val)  
+
+        range_slider.setValue([default_min, default_max])  
+
+        def update_range():
+            min_value, max_value = range_slider.value()  
+            if min_value >= max_value: 
+                min_value = max_value - 1
+                range_slider.setValue([min_value, max_value])
+            self.update_parameter(f"{label_text} Min", min_value)
+            self.update_parameter(f"{label_text} Max", max_value)
+
+        range_slider.valueChanged.connect(update_range) 
+
+        layout.addWidget(label)
+        layout.addWidget(range_slider)
+
+        self.update_parameter(f"{label_text} Min", default_min)
+        self.update_parameter(f"{label_text} Max", default_max)
+
+        return container
+
+
+
 
 if __name__ == "__main__":
     from PyQt5.QtWidgets import QApplication, QMainWindow
