@@ -1,31 +1,37 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+from Core.gray import rgb_to_grayscale
 
-image_path = "images/colored2.jpg"
+image_path = "CV/Image-Editor-Computer-Vision/images/catty.jpg"
 image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
 imageRGB = cv2.imread(image_path, cv2.COLOR_BGR2RGB)
 
 def histogramGS(image):
     """
-    image: a grayscale image (2D numpy array)
+    image: an RGB image (3D numpy array) or a grayscale image (2D numpy array)
     returns: grayScale (x-axis), histogram (y-axis)
     """
-    grayScale, histogram = np.unique(image, return_counts=True)
+    if image.ndim == 3:
+        imageGS = rgb_to_grayscale(image)
+        grayScale, histogram = np.unique(imageGS, return_counts=True)
+    else:
+        grayScale, histogram = np.unique(image, return_counts=True)
     return grayScale, histogram
 
 def distribution(image):
     """
-    image: a grayscale image (2D numpy array)
+    image: an RGB image (3D numpy array)
     returns: grayScale (x-axis), distribution (y-axis)
     """
-    grayScale, histogram = np.unique(image, return_counts=True)
+    imageGS = rgb_to_grayscale(image)
+    grayScale, histogram = np.unique(imageGS, return_counts=True)
     distribution = histogram / np.sum(histogram)
     return grayScale, distribution
 
 def histogramRGB(image):
     """
-    image: a RGB image (3D numpy array)
+    image: an RGB image (3D numpy array)
     returns: red, green, blue histograms (1D numpy arrays)
     """
     red = image[:, :, 0].flatten()
@@ -66,3 +72,5 @@ def show_histograms(image):
 
     plt.tight_layout()
     plt.show()
+
+# show_histograms(imageRGB)
