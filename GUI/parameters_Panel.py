@@ -330,18 +330,30 @@ class ParametersPanel(QWidget):
 
     def updateHistogram(self, image):
 
-        for group_box in self.current_group_boxes:
-                layout = group_box.layout()
-                histogram_widget = show_histograms(image)
-                layout.addWidget(histogram_widget)
-                break
+        if hasattr(self, 'histogram_group'):
+            layout = self.histogram_group.layout()
+            while layout.count():
+                item = layout.takeAt(0)
+                widget = item.widget()
+                if widget:
+                    widget.setParent(None)
 
-    def updateEqualizedHistogram(self,image):
-        for group_box in self.current_group_boxes:
-                layout = group_box.layout()
-                histogram_widget = show_equalized_histograms(image)
-                layout.addWidget(histogram_widget)
-                break
+        histogram_widget = show_histograms(image)
+        layout.addWidget(histogram_widget)
+
+    def updateEqualizedHistogram(self, image):
+        if hasattr(self, 'Equalized_histogram_group'):
+            layout = self.Equalized_histogram_group.layout()
+
+            while layout.count():
+                item = layout.takeAt(0)
+                widget = item.widget()
+                if widget:
+                    widget.setParent(None)
+
+            histogram_widget = show_equalized_histograms(image)
+            layout.addWidget(histogram_widget)
+
 
     def createRangeSlider(self, label_text, min_val=-255, max_val=255, default_min=-50, default_max=50):
 
