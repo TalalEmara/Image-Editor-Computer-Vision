@@ -44,8 +44,16 @@ def histogramRGB(image):
     return redHist, greenHist, blueHist
 
 
+from PyQt5.QtWidgets import QWidget, QVBoxLayout
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+import matplotlib.pyplot as plt
+
 def show_histograms(image):
-    fig, axes = plt.subplots(3, 1)
+    widget = QWidget()
+    layout = QVBoxLayout(widget)
+
+    # Create a Matplotlib figure
+    fig, axes = plt.subplots(3, 1, figsize=(5, 8))
 
     # Plot 1: Grayscale Histogram
     gs, hg = histogramGS(image)
@@ -72,8 +80,13 @@ def show_histograms(image):
     axes[2].legend()
 
     plt.tight_layout()
-    plt.ion()
-    plt.show()
+
+    # Convert Matplotlib figure to a PyQt widget
+    canvas = FigureCanvas(fig)
+    layout.addWidget(canvas)
+
+    return widget
+
 def get_histogram_widget(image):
     """Creates a PyQtGraph widget showing grayscale histogram, grayscale distribution, and RGB histogram."""
     widget = QWidget()

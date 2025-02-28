@@ -86,10 +86,9 @@ class ImageProcessingApp(QMainWindow):
     
     def onParameterChanged(self, parameters):
         self.current_parameters = parameters
-        if self.input_image:
+        if self.input_image is not None:
             self.processImage()
-        else:
-            pass
+
     
     def onImageChanged(self, image):
         self.input_image = image.copy()
@@ -98,7 +97,7 @@ class ImageProcessingApp(QMainWindow):
     def processImage(self):
         
         output_image = self.input_image.copy()
-    
+
         if self.current_mode == "Frequency Domain Filter":
             if "Frequency Domain Filter" in self.current_parameters:
                 filter_type = self.current_parameters.get("Frequency Domain Filter")
@@ -115,8 +114,9 @@ class ImageProcessingApp(QMainWindow):
 
         elif self.current_mode=="Histogram":
             # output_image=self.input_image
-            show_histograms(self.input_image)
-            self.modesLayout.addWidget(get_histogram_widget(self.input_image))
+            # show_histograms(self.input_image)
+            self.modesLayout.addWidget(show_histograms(self.input_image))
+            #need to be in parameters!!!!!
 
         elif self.current_mode=="Gray":
             output_image=rgb_to_grayscale(self.input_image)
