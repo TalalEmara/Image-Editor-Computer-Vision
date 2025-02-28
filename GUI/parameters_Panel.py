@@ -20,18 +20,13 @@ class ParametersPanel(QWidget):
         self.parameter_panel.setContentsMargins(0, 0, 0, 0)
         self.current_group_boxes = []
         self.parameters = {}
-        self.timer = QTimer()
-        self.timer.setSingleShot(True)
-        self.timer.timeout.connect(self.emit_parameters)
 
         self.setupUI()
 
     def update_parameter(self, key, value):
         self.parameters[key] = value
-        self.timer.start(50)
-
-    def emit_parameters(self):
         self.parameter_changed.emit(self.parameters)
+
 
     def setupUI(self):
         # self.setSizePolicy(
@@ -85,8 +80,10 @@ class ParametersPanel(QWidget):
         spinbox.setFixedWidth(70)
         spinbox.setStyleSheet(SPIN_BOX_STYLE)
 
-        slider.valueChanged.connect(spinbox.setValue)
+        # slider.valueChanged.connect(spinbox.setValue)
+       
         spinbox.valueChanged.connect(slider.setValue)
+        slider.sliderReleased.connect(lambda: spinbox.setValue(slider.value()))
 
         layout.addWidget(label)
         layout.addWidget(slider)
@@ -173,7 +170,9 @@ class ParametersPanel(QWidget):
                             def emit_parameter_change():
                                 self.update_parameter(control['label'], spinbox.value())
 
-                            slider.valueChanged.connect(emit_parameter_change)
+                            # slider.valueChanged.connect(emit_parameter_change)
+                            slider.sliderReleased.connect(lambda: emit_parameter_change())
+
                             spinbox.valueChanged.connect(emit_parameter_change)
                             self.update_parameter(control['label'], spinbox.value())
 
