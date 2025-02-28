@@ -3,6 +3,8 @@ from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QGroupBox, QLabel, QComboBox, QSlider, QPushButton,
     QSpinBox, QHBoxLayout, QSizePolicy,QDoubleSpinBox
 )
+from Core.histogram import show_histograms
+from Core.equalize  import  show_equalized_histograms
 from PyQt5.QtCore import pyqtSignal
 
 from GUI.styles import (
@@ -216,7 +218,26 @@ class ParametersPanel(QWidget):
         self.parameter_panel.takeAt(0)
         self.parameters.clear()
 
-        if selected_mode == "Noise & Filter":
+        if selected_mode == "Histogram":
+            self.histogram_group = QGroupBox("Histogram")
+            self.histogram_group.setStyleSheet(GROUP_BOX_STYLE)
+            self.histogram_layout = QVBoxLayout(self.histogram_group)
+
+            self.histogram_group.setLayout(self.histogram_layout)
+            self.parameter_panel.addWidget(self.histogram_group)
+            self.current_group_boxes.append(self.histogram_group)
+
+        elif selected_mode == "Equalization":
+            self.Equalizedhistogram_group = QGroupBox("Equalization")
+            self.Equalizedhistogram_group.setStyleSheet(GROUP_BOX_STYLE)
+            self.Equalizedhistogram_layout = QVBoxLayout(self.Equalizedhistogram_group)
+
+            self.Equalizedhistogram_group.setLayout(self.Equalizedhistogram_layout)
+            self.parameter_panel.addWidget(self.Equalizedhistogram_group)
+            self.current_group_boxes.append(self.Equalizedhistogram_group)
+
+
+        elif selected_mode == "Noise & Filter":
             noise_config = {
                 'title': 'Noise',
                 'type_selector': {
@@ -313,6 +334,35 @@ class ParametersPanel(QWidget):
         if self.parameters:
             self.parameter_changed.emit(self.parameters)
 
+    def updateHistogram(self, image):
+        
+        for group_box in self.current_group_boxes:
+            if group_box.title() == "Histogram":
+                # Remove previous histogram widget
+                layout = group_box.layout()
+                while layout.count():
+                    item = layout.takeAt(0)
+                    widget = item.widget()
+                    if widget:
+                        widget.deleteLater()
+                
+                histogram_widget = show_histograms(image)
+                layout.addWidget(histogram_widget)
+                break
+
+    def updateEqualizedHistogram(self,image):
+        for group_box in self.current_group_boxes:
+            if group_box.title() == "Equalization":
+                layout = group_box.layout()
+                while layout.count():
+                    item = layout.takeAt(0)
+                    widget = item.widget()
+                    if widget:
+                        widget.deleteLater()
+                
+                histogram_widget = show_equalized_histograms(image)
+                layout.addWidget(histogram_widget)
+                break
 
     def createRangeSlider(self, label_text, min_val=-255, max_val=255, default_min=-50, default_max=50):
 
@@ -338,7 +388,7 @@ class ParametersPanel(QWidget):
             self.update_parameter(f"{label_text} Min", min_value)
             self.update_parameter(f"{label_text} Max", max_value)
 
-        range_slider.valueChanged.connect(update_range)
+        range_slider.sliderReleased.connect(update_range)
 
         layout.addWidget(label)
         layout.addWidget(range_slider)

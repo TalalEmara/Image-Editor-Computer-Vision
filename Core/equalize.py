@@ -4,6 +4,11 @@ import matplotlib.pyplot as plt
 from Core.histogram import histogramGS, distribution, histogramRGB
 from Core.gray import rgb_to_grayscale  
 
+from PyQt5.QtWidgets import QWidget, QVBoxLayout
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+import matplotlib.pyplot as plt
+
+
 def cumulative_summation(histogram):
     return np.cumsum(histogram)
 
@@ -64,21 +69,21 @@ def equalization(image):
 
         return equalized_image
 
-
 def show_equalized_histograms(equalized_image):
-    
-    fig, axes = plt.subplots(4, 1)
+    widget = QWidget()
+    layout = QVBoxLayout(widget)
+    fig, axes = plt.subplots(4, 1,figsize=(5, 8))
 
     # Equalized Grayscale Histogram
     gs_eq, hist_eq = histogramGS(equalized_image)
-    axes[0].bar(gs_eq, hist_eq, color='gray', width=1)
+    axes[0].bar(gs_eq, hist_eq, color='gray')
     axes[0].set_title("Histogram of Equalized Image")
     axes[0].set_xlabel("Gray Scale")
     axes[0].set_ylabel("Frequency")
 
     # Equalized Grayscale Distribution 
     gs_eq, dist_eq = distribution(equalized_image)
-    axes[1].bar(gs_eq, dist_eq, color='lightgreen', width=1)
+    axes[1].bar(gs_eq, dist_eq, color='lightgreen')
     axes[1].set_title("Distribution of Equalized Image")
     axes[1].set_xlabel("Gray Scale")
     axes[1].set_ylabel("PDF")
@@ -102,5 +107,7 @@ def show_equalized_histograms(equalized_image):
     axes[3].legend()
 
     plt.tight_layout()
-    plt.ion()
-    plt.show()
+    canvas = FigureCanvas(fig)
+    layout.addWidget(canvas)
+
+    return widget

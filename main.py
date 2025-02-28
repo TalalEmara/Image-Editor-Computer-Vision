@@ -110,13 +110,11 @@ class ImageProcessingApp(QMainWindow):
         
         elif self.current_mode == "Equalization":
             output_image = equalization(self.input_image)
-            show_equalized_histograms(output_image)
+            self.parameters_panel.updateEqualizedHistogram(output_image)
 
         elif self.current_mode=="Histogram":
-            # output_image=self.input_image
-            # show_histograms(self.input_image)
-            self.modesLayout.addWidget(show_histograms(self.input_image))
-            #need to be in parameters!!!!!
+            self.parameters_panel.updateHistogram(self.input_image)
+            
 
         elif self.current_mode=="Gray":
             output_image=rgb_to_grayscale(self.input_image)
