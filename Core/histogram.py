@@ -54,6 +54,7 @@ def show_histograms(image):
 
     # Create a Matplotlib figure
     fig, axes = plt.subplots(3, 1, figsize=(5, 8))
+    fig.patch.set_alpha(0)
 
     # Plot 1: Grayscale Histogram
     gs, hg = histogramGS(image)

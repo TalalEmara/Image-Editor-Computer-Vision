@@ -73,6 +73,7 @@ def show_equalized_histograms(equalized_image):
     widget = QWidget()
     layout = QVBoxLayout(widget)
     fig, axes = plt.subplots(4, 1,figsize=(5, 8))
+    fig.patch.set_alpha(0)
 
     # Equalized Grayscale Histogram
     gs_eq, hist_eq = histogramGS(equalized_image)
