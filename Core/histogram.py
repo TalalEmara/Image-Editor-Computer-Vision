@@ -1,6 +1,10 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout
+import pyqtgraph as pg
+
+
 from Core.gray import rgb_to_grayscale
 
 
@@ -70,5 +74,52 @@ def show_histograms(image):
     plt.tight_layout()
     plt.ion()
     plt.show()
+def get_histogram_widget(image):
+    """Creates a PyQtGraph widget showing grayscale histogram, grayscale distribution, and RGB histogram."""
+    widget = QWidget()
+    layout = QVBoxLayout(widget)
+
+    # Create PyQtGraph plot widgets
+    gray_hist_plot = pg.PlotWidget(title="Histogram of Image")
+    gray_dist_plot = pg.PlotWidget(title="Distribution of Image")
+    rgb_hist_plot = pg.PlotWidget(title="RGB Histogram")
+
+    # Add plots to layout
+    layout.addWidget(gray_hist_plot)
+    layout.addWidget(gray_dist_plot)
+    layout.addWidget(rgb_hist_plot)
+
+    # Grayscale Histogram using BarGraphItem
+    gs, hg = histogramGS(image)
+    bars = pg.BarGraphItem(x=gs, height=hg, width=1, brush="gray",  pen=None)
+    gray_hist_plot.addItem(bars)
+    gray_hist_plot.setLabel('bottom', 'Gray Scale')
+    gray_hist_plot.setLabel('left', 'Frequency')
+
+    # Grayscale Distribution (PDF)
+    gs, dist = distribution(image)
+    bars_dist = pg.BarGraphItem(x=gs, height=dist, width=1, brush='lightgreen',  pen=None)
+    gray_dist_plot.addItem(bars_dist)
+    gray_dist_plot.setLabel('bottom', 'Gray Scale')
+    gray_dist_plot.setLabel('left', 'PDF')
+
+    # RGB Histogram using BarGraphItem
+    red, green, blue = histogramRGB(image)
+    x = np.arange(len(red))
+
+    red_bars = pg.BarGraphItem(x=x, height=red, width=1, brush=pg.mkBrush(255, 0, 0, 150), pen=None)
+    green_bars = pg.BarGraphItem(x=x, height=green, width=1, brush=pg.mkBrush(0, 255, 0, 150), pen=None)
+    blue_bars = pg.BarGraphItem(x=x, height=blue, width=1, brush=pg.mkBrush(0, 0, 255, 150), pen=None)
+
+
+
+    rgb_hist_plot.addItem(red_bars)
+    rgb_hist_plot.addItem(green_bars)
+    rgb_hist_plot.addItem(blue_bars)
+
+    rgb_hist_plot.setLabel('bottom', 'RGB')
+    rgb_hist_plot.setLabel('left', 'Frequency')
+
+    return widget
 
 # show_histograms(imageRGB)

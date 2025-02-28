@@ -10,7 +10,7 @@ from GUI.ImageViewer import ImageViewer
 from Core.NoiseAdder import add_uniform_noise, add_gaussian_noise, add_salt_pepper_noise
 from Core.frequencyFilter import add_HighPass_filter, add_LowPass_filter
 from Core.equalize import equalization, show_equalized_histograms
-from Core.histogram import show_histograms
+from Core.histogram import show_histograms, get_histogram_widget
 from Core.filters import average_filter, gaussian_filter, median_filter
 from Core.gray import rgb_to_grayscale
 import cv2
@@ -49,21 +49,21 @@ class ImageProcessingApp(QMainWindow):
         self.setCentralWidget(main_widget)
         main_layout = QHBoxLayout(main_widget)
 
-        modesLayout = QVBoxLayout()
-        modesLayout.addLayout(self.modes_panel.createmodePanel())
-        modesLayout.addWidget(self.parameters_panel)
-        modesLayout.addStretch()
+        self.modesLayout = QVBoxLayout()
+        self.modesLayout.addLayout(self.modes_panel.createmodePanel())
+        self.modesLayout.addWidget(self.parameters_panel)
+        self.modesLayout.addStretch()
 
         imagesLayout = QHBoxLayout()
-        inputLayout = QVBoxLayout()
+        self.inputLayout = QVBoxLayout()
         outputLayout = QVBoxLayout()
-        inputLayout.addWidget(self.mainInputViewer,50)
+        self.inputLayout.addWidget(self.mainInputViewer,50)
         outputLayout.addWidget(self.outputViewer,50)
-        imagesLayout.addLayout(inputLayout)
+        imagesLayout.addLayout(self.inputLayout)
         imagesLayout.addLayout(outputLayout)
 
 
-        main_layout.addLayout(modesLayout,20)
+        main_layout.addLayout(self.modesLayout, 20)
         main_layout.addLayout(imagesLayout,80)
         print("UI components initialized")
 
@@ -114,8 +114,9 @@ class ImageProcessingApp(QMainWindow):
             show_equalized_histograms(output_image)
 
         elif self.current_mode=="Histogram":
-            output_image=self.input_image
+            # output_image=self.input_image
             show_histograms(self.input_image)
+            self.modesLayout.addWidget(get_histogram_widget(self.input_image))
 
         elif self.current_mode=="Gray":
             output_image=rgb_to_grayscale(self.input_image)
