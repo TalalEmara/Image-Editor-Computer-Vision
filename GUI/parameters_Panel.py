@@ -219,22 +219,16 @@ class ParametersPanel(QWidget):
         self.parameters.clear()
 
         if selected_mode == "Histogram":
-            self.histogram_group = QGroupBox("Histogram")
-            self.histogram_group.setStyleSheet(GROUP_BOX_STYLE)
+            self.histogram_group = QWidget()
             self.histogram_layout = QVBoxLayout(self.histogram_group)
-
-            self.histogram_group.setLayout(self.histogram_layout)
             self.parameter_panel.addWidget(self.histogram_group)
             self.current_group_boxes.append(self.histogram_group)
 
         elif selected_mode == "Equalization":
-            self.Equalizedhistogram_group = QGroupBox("Equalization")
-            self.Equalizedhistogram_group.setStyleSheet(GROUP_BOX_STYLE)
-            self.Equalizedhistogram_layout = QVBoxLayout(self.Equalizedhistogram_group)
-
-            self.Equalizedhistogram_group.setLayout(self.Equalizedhistogram_layout)
-            self.parameter_panel.addWidget(self.Equalizedhistogram_group)
-            self.current_group_boxes.append(self.Equalizedhistogram_group)
+            self.Equalized_histogram_group = QWidget()
+            self.Equalized_histogram_layout = QVBoxLayout(self.Equalized_histogram_group)
+            self.parameter_panel.addWidget(self.Equalized_histogram_group)
+            self.current_group_boxes.append(self.Equalized_histogram_group)
 
 
         elif selected_mode == "Noise & Filter":
@@ -335,31 +329,16 @@ class ParametersPanel(QWidget):
             self.parameter_changed.emit(self.parameters)
 
     def updateHistogram(self, image):
-        
+
         for group_box in self.current_group_boxes:
-            if group_box.title() == "Histogram":
-                # Remove previous histogram widget
                 layout = group_box.layout()
-                while layout.count():
-                    item = layout.takeAt(0)
-                    widget = item.widget()
-                    if widget:
-                        widget.deleteLater()
-                
                 histogram_widget = show_histograms(image)
                 layout.addWidget(histogram_widget)
                 break
 
     def updateEqualizedHistogram(self,image):
         for group_box in self.current_group_boxes:
-            if group_box.title() == "Equalization":
                 layout = group_box.layout()
-                while layout.count():
-                    item = layout.takeAt(0)
-                    widget = item.widget()
-                    if widget:
-                        widget.deleteLater()
-                
                 histogram_widget = show_equalized_histograms(image)
                 layout.addWidget(histogram_widget)
                 break
