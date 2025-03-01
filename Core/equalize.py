@@ -26,6 +26,8 @@ def yuv_to_rgb(yuv):
                        [1.0, 2.03211, 0.0]])
     return np.dot(yuv, matrix.T)
 
+from Core.histogram import histogramGS
+
 def equalization(image):
     """
     Applies histogram equalization to grayscale and color images (using YUV space for color).
@@ -42,15 +44,20 @@ def equalization(image):
     else:  # Convert RGB to grayscale for histogram computation
         imageGS = rgb_to_grayscale(image)
 
-    histogram, _ = np.histogram(imageGS.flatten(), 256, [0, 256])
+    # Use histogramGS instead of np.histogram
+    grayScale, histogram = histogramGS(imageGS)
 
     # Compute CDF
     cdf = cumulative_summation(histogram)
     cdf = (cdf - cdf.min()) * 255 / (cdf.max() - cdf.min())
     cdf = np.ma.filled(cdf, 0).astype(np.uint8)
 
+    # Create a mapping from grayscale values to equalized values
+    equalized_values = np.zeros(256, dtype=np.uint8)
+    equalized_values[grayScale] = cdf  # Map only existing grayscale values
+
     if image.ndim == 2:  # Grayscale image equalization
-        equalized_image = cdf[imageGS]
+        equalized_image = equalized_values[imageGS]
         return equalized_image
     else:  # Color image, process in YUV space
         yuv = rgb_to_yuv(image.astype(np.float32) / 255.0)  # Normalize to [0, 1]
@@ -58,7 +65,7 @@ def equalization(image):
         Y_channel = (yuv[:, :, 0] * 255).astype(np.uint8)  # Extract Y channel (brightness)
 
         # Equalize the Y channel
-        Y_equalized = cdf[Y_channel] / 255.0  # Normalize back to [0, 1]
+        Y_equalized = equalized_values[Y_channel] / 255.0  # Normalize back to [0, 1]
 
         # Replace equalized Y channel back
         yuv[:, :, 0] = Y_equalized
@@ -68,6 +75,7 @@ def equalization(image):
         equalized_image = np.clip(equalized_image, 0, 255).astype(np.uint8)  # Ensure valid range
 
         return equalized_image
+
 
 def show_equalized_histograms(equalized_image):
     widget = QWidget()
