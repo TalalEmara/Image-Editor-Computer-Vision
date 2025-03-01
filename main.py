@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QHBoxLayout, QVBoxLayout
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QSlider, QLabel
 import sys
 if __name__ == '__main__':
     import sys
@@ -8,7 +8,7 @@ from GUI.modes import ModeSelector
 from GUI.parameters_Panel import ParametersPanel
 from GUI.ImageViewer import ImageViewer
 from Core.NoiseAdder import add_uniform_noise, add_gaussian_noise, add_salt_pepper_noise
-from Core.frequencyFilter import add_HighPass_filter, add_LowPass_filter
+from Core.frequencyFilter import add_HighPass_filter, add_LowPass_filter, generate_hybrid_image, generate_hybrid_imageK
 from Core.equalize import equalization, show_equalized_histograms
 from Core.histogram import show_histograms, get_histogram_widget
 from Core.filters import average_filter, gaussian_filter, median_filter
@@ -26,6 +26,8 @@ class ImageProcessingApp(QMainWindow):
         self.original_image = None
 
         self.input_image = None
+        #could be array for better handling
+        self.secondaryInput = None
         
         self.initializeUI()
         self.connectUI()
@@ -36,6 +38,7 @@ class ImageProcessingApp(QMainWindow):
 
         self.parameters_panel = ParametersPanel()
         self.mainInputViewer = ImageViewer()
+        self.secondaryInputViewer = ImageViewer()
 
         self.outputViewer = ImageViewer()
         self.outputViewer.setReadOnly(True)
@@ -71,16 +74,73 @@ class ImageProcessingApp(QMainWindow):
         self.modes_panel.mode_selected.connect(self.onModeChanged)
         self.parameters_panel.parameter_changed.connect(self.onParameterChanged)
         self.mainInputViewer.imageChanged.connect(self.onImageChanged)
+        self.secondaryInputViewer.imageChanged.connect(self.onSecondaryHybridChanged)
         # self.mainInputViewer.imageChanged.connect(self.processImage)
         
         print("UI connected")
-    
-    def onModeChanged(self, mode):
+
+    from PyQt5.QtWidgets import QSlider, QLabel
+
+    def onModeChanged(self, mode): #for debug onlly
+        self.secondaryInputViewer.hide()  # Hide secondary image viewer initially
         self.current_mode = mode
         self.parameters_panel.updateGroupBox(mode)
         self.current_parameters = self.parameters_panel.parameters.copy()
+
+        if self.current_mode == "Hybrid Images":
+            self.mixButton = QPushButton("Mix")
+            self.inputLayout.addWidget(self.mixButton)
+            self.inputLayout.addWidget(self.secondaryInputViewer, 50)
+            self.secondaryInputViewer.show()
+
+            # Create sliders
+            self.weightSlider = QSlider()
+            self.lowPassSlider = QSlider()
+            self.highPassSlider = QSlider()
+
+            # Set slider ranges
+            self.weightSlider.setRange(0, 100)  # Weight: 0.0 - 1.0 (scaled by 100)
+            self.lowPassSlider.setRange(1, 100)  # Cutoff freq for low-pass filter
+            self.highPassSlider.setRange(1, 100)  # Cutoff freq for high-pass filter
+
+            # Set default values
+            self.weightSlider.setValue(50)  # Default weight = 0.5
+            self.lowPassSlider.setValue(3)  # Default low-pass cutoff
+            self.highPassSlider.setValue(70)  # Default high-pass cutoff
+
+            # Labels for sliders
+            self.weightLabel = QLabel("Weight: 0.5")
+            self.lowPassLabel = QLabel("Low Pass Cutoff: 3")
+            self.highPassLabel = QLabel("High Pass Cutoff: 70")
+
+            # Add sliders and labels to layout
+            self.inputLayout.addWidget(self.weightLabel)
+            self.inputLayout.addWidget(self.weightSlider)
+            self.inputLayout.addWidget(self.lowPassLabel)
+            self.inputLayout.addWidget(self.lowPassSlider)
+            self.inputLayout.addWidget(self.highPassLabel)
+            self.inputLayout.addWidget(self.highPassSlider)
+
+            # Connect sliders to update labels
+            self.weightSlider.valueChanged.connect(self.updateSliderLabels)
+            self.lowPassSlider.valueChanged.connect(self.updateSliderLabels)
+            self.highPassSlider.valueChanged.connect(self.updateSliderLabels)
+
+            # Connect mix button
+            self.mixButton.clicked.connect(self.mix)
+
+    def updateSliderLabels(self):
+        """ Update the labels with current slider values """
+        weight = self.weightSlider.value() / 100  # Scale back to 0.0 - 1.0
+        low_cutoff = self.lowPassSlider.value()
+        high_cutoff = self.highPassSlider.value()
+
+        self.weightLabel.setText(f"Weight: {weight:.2f}")
+        self.lowPassLabel.setText(f"Low Pass Cutoff: {low_cutoff}")
+        self.highPassLabel.setText(f"High Pass Cutoff: {high_cutoff}")
+
         if self.input_image is not None:
-            QApplication.processEvents()  
+            QApplication.processEvents()
             self.processImage()
 
     
@@ -93,6 +153,21 @@ class ImageProcessingApp(QMainWindow):
     def onImageChanged(self, image):
         self.input_image = image.copy()
         self.processImage()
+    def onSecondaryHybridChanged(self, image):
+        self.secondaryInput = image.copy()
+
+    def mix(self):
+        if self.input_image is None or self.secondaryInput is None:
+            print("Error: One or both images are None!")
+            return  # Avoid crashing
+
+        weight = self.weightSlider.value() / 100  # Convert back to 0.0 - 1.0
+        low_cutoff = self.lowPassSlider.value()
+        high_cutoff = self.highPassSlider.value()
+
+        self.outputViewer.setImage(
+            # generate_hybrid_image(self.input_image, self.secondaryInput, weight, low_cutoff, high_cutoff))
+            generate_hybrid_imageK(self.input_image, self.secondaryInput))
 
     def processImage(self):
         
@@ -114,7 +189,6 @@ class ImageProcessingApp(QMainWindow):
 
         elif self.current_mode=="Histogram":
             self.parameters_panel.updateHistogram(self.input_image)
-            
 
         elif self.current_mode=="Gray":
             output_image=rgb_to_grayscale(self.input_image)
