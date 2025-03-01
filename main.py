@@ -86,6 +86,9 @@ class ImageProcessingApp(QMainWindow):
         self.current_mode = mode
         self.parameters_panel.updateGroupBox(mode)
         self.current_parameters = self.parameters_panel.parameters.copy()
+        if self.input_image is not None:
+            QApplication.processEvents()  
+            self.processImage()
 
         if self.current_mode == "Hybrid Images":
             self.mixButton = QPushButton("Mix")

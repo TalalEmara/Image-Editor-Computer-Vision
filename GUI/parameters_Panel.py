@@ -121,16 +121,49 @@ class ParametersPanel(QWidget):
         return container
 
 
+    def createControlWidget(self, control, controls_layout):
+        if control['type'] == 'slider':
+            control_widget = self.createSliderWithSpinBox(control['label'], *control['range'])
+            controls_layout.addWidget(control_widget)
+            slider = control_widget.findChildren(QSlider)[0]
+            spinbox = control_widget.findChildren(QSpinBox)[0]
+
+            def emit_parameter_change():
+                self.update_parameter(control['label'], spinbox.value())
+
+            slider.sliderReleased.connect(lambda: emit_parameter_change())
+            spinbox.valueChanged.connect(emit_parameter_change)
+            self.update_parameter(control['label'], spinbox.value())
+
+        elif control['type'] == 'doubleSpin':
+            control_widget = self.createDoubleSpinBox(control['label'], control['range'][0], control['range'][1], control.get('step', 0.01))
+            controls_layout.addWidget(control_widget)
+            spinbox = control_widget.findChildren(QDoubleSpinBox)[0]
+
+            def emit_parameter_change():
+                self.update_parameter(control['label'], spinbox.value())
+
+            spinbox.valueChanged.connect(emit_parameter_change)
+            self.update_parameter(control['label'], spinbox.value())
+
+        elif control['type'] == 'button':
+            control_widget = QPushButton(control['label'])
+            control_widget.setStyleSheet(BUTTON_STYLE)
+            control_widget.setFixedWidth(120)
+            button_layout = QHBoxLayout()
+            button_layout.addWidget(control_widget)
+            button_layout.setAlignment(Qt.AlignCenter)
+            controls_layout.addLayout(button_layout)
+
     def createGroupBox(self, config):
         group = QGroupBox(config['title'])
-        # group.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Minimum)
         group.setStyleSheet(GROUP_BOX_STYLE)
 
         layout = QVBoxLayout()
         layout.setSpacing(5)
         layout.setContentsMargins(10, 10, 10, 10)
 
-        if 'type_selector' in config:
+        if 'type_selector' in config and config['type_selector'] is not None:
             selector_config = config['type_selector']
 
             type_container = QWidget()
@@ -160,44 +193,7 @@ class ParametersPanel(QWidget):
 
                 if selected_type in selector_config['controls']:
                     for control in selector_config['controls'][selected_type]:
-                        if control['type'] == 'slider':
-                            control_widget = self.createSliderWithSpinBox(
-                                control['label'],
-                                *control['range']
-                            )
-                            controls_layout.addWidget(control_widget)
-                            slider = control_widget.findChildren(QSlider)[0]
-                            spinbox = control_widget.findChildren(QSpinBox)[0]
-
-                            def emit_parameter_change():
-                                self.update_parameter(control['label'], spinbox.value())
-
-                            # slider.valueChanged.connect(emit_parameter_change)
-                            slider.sliderReleased.connect(lambda: emit_parameter_change())
-
-                            spinbox.valueChanged.connect(emit_parameter_change)
-                            self.update_parameter(control['label'], spinbox.value())
-
-                        elif control['type'] == 'doubleSpin':
-                            control_widget = self.createDoubleSpinBox(
-                                control['label'],
-                                control['range'][0],
-                                control['range'][1],
-                                control.get('step', 0.01)
-                            )
-                            controls_layout.addWidget(control_widget)
-
-                            spinbox = control_widget.findChildren(QDoubleSpinBox)[0]
-
-                            def emit_parameter_change():
-                                self.update_parameter(control['label'], spinbox.value())
-
-                            spinbox.valueChanged.connect(emit_parameter_change)
-                            self.update_parameter(control['label'], spinbox.value())
-
-                # controls_widget.adjustSize()
-                # group.adjustSize()
-                # self.adjustSize()
+                        self.createControlWidget(control, controls_layout)
 
             type_combo.currentTextChanged.connect(lambda text: self.update_parameter(config['title'], text))
             type_combo.currentTextChanged.connect(updateControls)
@@ -205,8 +201,19 @@ class ParametersPanel(QWidget):
             self.update_parameter(config['title'], selector_config['options'][0])
             updateControls(selector_config['options'][0])
 
+        else:
+            controls_widget = QWidget()
+            controls_layout = QVBoxLayout(controls_widget)
+            controls_layout.setContentsMargins(0, 5, 0, 0)
+            controls_layout.setSpacing(5)
+            layout.addWidget(controls_widget)
+
+            for control in config.get('controls', []):
+                self.createControlWidget(control, controls_layout)
+
         group.setLayout(layout)
         return group
+
 
     def updateGroupBox(self, selected_mode):
         # Clear existing group boxes
@@ -318,6 +325,22 @@ class ParametersPanel(QWidget):
                 }
             }
             self.current_group_boxes.append(self.createGroupBox(edge_config))
+
+        
+        elif selected_mode == "Hybrid Images":
+            edge_config = {
+                'title': 'Hybrid Images',
+                'type_selector': None,  
+                'controls': [
+                    {'label': 'Weight:', 'type': 'doubleSpin', 'range': (0, 1), 'default': 0.5},
+                    {'label': 'Low Pass Cutoff:', 'type': 'slider', 'range': (0, 100), 'default': 20},
+                    {'label': 'High Pass Cutoff:', 'type': 'slider', 'range': (0, 100), 'default': 60},
+                    {'label': 'Mix', 'type': 'button'}
+                ]
+            }
+
+            self.current_group_boxes.append(self.createGroupBox(edge_config))
+
 
         for group_box in self.current_group_boxes:
             self.parameter_panel.addWidget(group_box)
