@@ -128,11 +128,16 @@ class ParametersPanel(QWidget):
             slider = control_widget.findChildren(QSlider)[0]
             spinbox = control_widget.findChildren(QSpinBox)[0]
 
+            def update_spinbox_value(value):
+                odd_value = value if value % 2 != 0 else value + 1
+                spinbox.setValue(odd_value)
+
             def emit_parameter_change():
                 self.update_parameter(control['label'], spinbox.value())
 
             slider.sliderReleased.connect(lambda: emit_parameter_change())
             spinbox.valueChanged.connect(emit_parameter_change)
+            slider.sliderReleased.connect(lambda value: update_spinbox_value(value))
             self.update_parameter(control['label'], spinbox.value())
 
         elif control['type'] == 'doubleSpin':
@@ -340,6 +345,24 @@ class ParametersPanel(QWidget):
             }
 
             self.current_group_boxes.append(self.createGroupBox(edge_config))
+
+        elif selected_mode == "Threshold":
+           edge_config= {
+                'title': 'Threshold',
+                'type_selector': {
+                    'label': 'Threshold Type',
+                    'options': ['Global','Local'],
+                    'controls': {
+                        'Global': [
+                            {'label': 'Threshold:', 'type': 'slider', 'range': (0, 255)}
+                        ],
+                        'Local': [
+                            {'label': 'Window Size:', 'type': 'slider', 'range': (1, 255),'default': 70,'step': 2}
+                        ]
+                    }
+                }
+            }
+        self.current_group_boxes.append(self.createGroupBox(edge_config))
 
 
         for group_box in self.current_group_boxes:

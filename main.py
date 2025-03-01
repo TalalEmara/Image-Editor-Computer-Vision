@@ -13,6 +13,7 @@ from Core.equalize import equalization, show_equalized_histograms
 from Core.histogram import show_histograms, get_histogram_widget
 from Core.filters import average_filter, gaussian_filter, median_filter
 from Core.gray import rgb_to_grayscale
+from Core.thresholding import globalThreshold,sauvolaThresholding
 import cv2
 import numpy as np
 
@@ -196,6 +197,16 @@ class ImageProcessingApp(QMainWindow):
         elif self.current_mode=="Gray":
             output_image=rgb_to_grayscale(self.input_image)
         
+        elif self.current_mode == "Threshold":
+            threshold_type = self.current_parameters.get("Threshold Type", "Global")
+            
+            if threshold_type == "Global":
+                threshold_value = self.current_parameters.get("Threshold", 127)  # Default value
+                output_image = globalThreshold(output_image, threshold_value)  # Apply global thresholding
+            elif threshold_type == "Local":
+                window_size = self.current_parameters.get("Window Size", 70)  # Default window size
+                output_image = sauvolaThresholding(output_image, window_size)
+
         elif self.current_mode == "Noise & Filter":
             if "Noise" in self.current_parameters:
                 noise_type = self.current_parameters.get("Noise")
