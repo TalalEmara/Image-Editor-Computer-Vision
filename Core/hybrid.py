@@ -153,16 +153,16 @@ def hybrid_image(image1, image2):
 
     return hybrid.astype(np.uint8)
 
-# Example usage:
-# Load images using OpenCV
-image1 = cv2.imread('C:/Faculty/SBE 24-25/Computer Vision/Repo/Image-Editor-Computer-Vision/images/dog.jpg', cv2.IMREAD_GRAYSCALE)
-image2 = cv2.imread('C:/Faculty/SBE 24-25/Computer Vision/Repo/Image-Editor-Computer-Vision/images/cat.jpg', cv2.IMREAD_GRAYSCALE)
+# # Example usage:
+# # Load images using OpenCV
+# image1 = cv2.imread('C:/Faculty/SBE 24-25/Computer Vision/Repo/Image-Editor-Computer-Vision/images/dog.jpg', cv2.IMREAD_GRAYSCALE)
+# image2 = cv2.imread('C:/Faculty/SBE 24-25/Computer Vision/Repo/Image-Editor-Computer-Vision/images/cat.jpg', cv2.IMREAD_GRAYSCALE)
 
-# Ensure images are loaded successfully
-if image1 is None or image2 is None:
-    raise ValueError("One or both images could not be loaded. Check the file paths.")
+# # Ensure images are loaded successfully
+# if image1 is None or image2 is None:
+#     raise ValueError("One or both images could not be loaded. Check the file paths.")
 
-# Create hybrid image
-hybrid = hybrid_image(image1, image2)
+# # Create hybrid image
+# hybrid = hybrid_image(image1, image2)
 
 
