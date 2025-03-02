@@ -14,6 +14,7 @@ from Core.histogram import show_histograms, get_histogram_widget
 from Core.filters import average_filter, gaussian_filter, median_filter
 from Core.gray import rgb_to_grayscale
 from Core.thresholding import globalThreshold,sauvolaThresholding
+from Core.hybrid import hybrid_image
 import cv2
 import numpy as np
 
@@ -169,9 +170,10 @@ class ImageProcessingApp(QMainWindow):
         low_cutoff = self.lowPassSlider.value()
         high_cutoff = self.highPassSlider.value()
 
-        self.outputViewer.setImage(
+        self.outputViewer.setImage(hybrid_image(rgb_to_grayscale(self.input_image), rgb_to_grayscale(self.secondaryInput)))
             # generate_hybrid_image(self.input_image, self.secondaryInput, weight, low_cutoff, high_cutoff))
-            generate_hybrid_imageK(self.input_image, self.secondaryInput))
+            # generate_hybrid_imageK(self.input_image, self.secondaryInput))
+
 
     def processImage(self):
         
