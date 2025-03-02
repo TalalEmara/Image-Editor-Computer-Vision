@@ -62,7 +62,7 @@ class ParametersPanel(QWidget):
             spinbox.setStyleSheet(SPIN_BOX_STYLE)
 
 
-    def createSliderWithSpinBox(self, label_text, min_val, max_val,step=1):
+    def createSliderWithSpinBox(self, label_text, min_val, max_val,step=1,default=None):
         container = QWidget()
         layout = QHBoxLayout(container)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -74,16 +74,21 @@ class ParametersPanel(QWidget):
 
         slider = QSlider(Qt.Horizontal)
         slider.setRange(min_val, max_val)
+        slider.setSingleStep(step)
         slider.setMinimumWidth(100)
         slider.setStyleSheet(SLIDER_STYLE)
 
         spinbox = QSpinBox()
         spinbox.setRange(min_val, max_val)
+        spinbox.setSingleStep(step)
         spinbox.setFixedWidth(70)
         spinbox.setStyleSheet(SPIN_BOX_STYLE)
 
         # slider.valueChanged.connect(spinbox.setValue)
-       
+        default_value = default if default is not None else min_val
+        slider.setValue(default_value)
+        spinbox.setValue(default_value)
+
         spinbox.valueChanged.connect(slider.setValue)
         slider.sliderReleased.connect(lambda: spinbox.setValue(slider.value()))
 
@@ -123,7 +128,12 @@ class ParametersPanel(QWidget):
 
     def createControlWidget(self, control, controls_layout):
         if control['type'] == 'slider':
-            control_widget = self.createSliderWithSpinBox(control['label'], *control['range'])
+            control_widget = self.createSliderWithSpinBox(
+            control['label'], control['range'][0], control['range'][1], 
+            step=control.get('step', 1),  
+            default=control.get('default', control['range'][0])  
+                    )
+
             controls_layout.addWidget(control_widget)
             slider = control_widget.findChildren(QSlider)[0]
             spinbox = control_widget.findChildren(QSpinBox)[0]
@@ -286,26 +296,23 @@ class ParametersPanel(QWidget):
 
             self.current_group_boxes.append(self.createGroupBox(noise_config))
             self.current_group_boxes.append(self.createGroupBox(filter_config))
-
+        
         elif selected_mode == "Edge Detection":
             edge_config = {
-                'title': 'Edge Detection Parameters',
+                'title': 'Edge Detection',
                 'type_selector': {
                     'label': 'Edge Detector:',
                     'options': ['Sobel', 'Roberts', 'Prewitt', 'Canny'],
                     'controls': {
                         'Sobel': [
-                            {'label': 'Threshold:', 'type': 'slider', 'range': (0, 255)}
-                        ],
-                        'Roberts': [
-                            {'label': 'Threshold:', 'type': 'slider', 'range': (0, 255)}
+                            {'label': 'Kernal size:', 'type': 'slider', 'range': (3, 9), 'step': 2, 'default': 3}
                         ],
                         'Prewitt': [
-                            {'label': 'Threshold:', 'type': 'slider', 'range': (0, 255)}
+                            {'label': 'Kernal size:', 'type': 'slider', 'range': (3, 9), 'step': 2, 'default': 3}
                         ],
                         'Canny': [
-                            {'label': 'Low Threshold:', 'type': 'slider', 'range': (0, 255)},
-                            {'label': 'High Threshold:', 'type': 'slider', 'range': (0, 255)}
+                            {'label': 'Low Threshold:', 'type': 'slider', 'range': (1, 100), 'step': 1, 'default': 50},
+                            {'label': 'High Threshold:', 'type': 'slider', 'range': (100, 200), 'step': 1, 'default': 150}
                         ]
                     }
                 }
@@ -354,7 +361,7 @@ class ParametersPanel(QWidget):
                     'options': ['Global', 'Local'],
                     'controls': {
                         'Global': [{'label': 'Threshold:', 'type': 'slider', 'range': (0, 255)}],
-                        'Local': [{'label': 'window size', 'type': 'slider', 'range': (3, 255, 2)}]
+                        'Local': [{'label': 'window size', 'type': 'slider', 'range': (3, 255),'step': 2}]
                     }
                 }
             }

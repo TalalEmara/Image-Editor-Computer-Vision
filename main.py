@@ -16,6 +16,7 @@ from Core.gray import rgb_to_grayscale
 from Core.thresholding import globalThreshold,sauvolaThresholding
 from Core.hybrid import hybrid_image
 from Core.normalize import normalize_image
+from Core.edges import sobel, robert, prewitt, canny
 import cv2
 import numpy as np
 
@@ -214,7 +215,30 @@ class ImageProcessingApp(QMainWindow):
                     window_size += 1
                 output_image = sauvolaThresholding(rgb_to_grayscale(self.input_image), window_size)
                     
-
+        elif self.current_mode == "Edge Detection":
+            edge_type = self.current_parameters.get("Edge Detection")
+            
+            if edge_type == "Sobel":
+                kernel_size = int(self.current_parameters.get("Kernal size:", 3))
+                if kernel_size % 2 == 0:
+                    kernel_size += 1 
+                _, _, output_image, _ = sobel(self.input_image, kernel_size)
+            
+            elif edge_type == "Roberts":
+                _, _, output_image, _ = robert(self.input_image)
+            
+            elif edge_type == "Prewitt":
+                kernel_size = int(self.current_parameters.get("Kernal size:", 3))
+                if kernel_size % 2 == 0:
+                    kernel_size += 1  
+                _, _, output_image, _ = prewitt(self.input_image, kernel_size)
+            
+            elif edge_type == "Canny":
+                low_threshold = int(self.current_parameters.get("Low Threshold:", 50))
+                high_threshold = int(self.current_parameters.get("High Threshold:", 150))
+                output_image = canny(self.input_image, low_threshold, high_threshold)
+            
+        
         elif self.current_mode == "Noise & Filter":
             if "Noise" in self.current_parameters:
                 noise_type = self.current_parameters.get("Noise")

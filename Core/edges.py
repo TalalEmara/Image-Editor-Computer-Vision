@@ -8,12 +8,14 @@ Testing and builtin functions are done at the end of the file
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-from gray import rgb_to_grayscale
-from filters import gaussian_filter
+from Core.gray import rgb_to_grayscale
+from Core.filters import gaussian_filter
 
 # convolution
 def custom_convolution(image, kernel):
     # Filter image
+    if len(image.shape) == 3:
+        image = rgb_to_grayscale(image)
     image = gaussian_filter(image, 3, 1.5)
     # image = rgb_to_grayscale(image)
     # Get dimensions of the image and kernel
@@ -109,6 +111,7 @@ def sobel(image, kernel_size=3):
     gradient_y = custom_convolution(image, Gy)
     gradient_magnitude = np.sqrt(gradient_x**2 + gradient_y**2)
     gradient_direction = np.arctan2(gradient_y, gradient_x)
+    gradient_magnitude=custom_normalize(gradient_magnitude, 0, 255)
     return gradient_x, gradient_y, gradient_magnitude, gradient_direction
 
 def robert(image):
@@ -123,6 +126,7 @@ def robert(image):
     gradient_y = custom_convolution(image, Gy)
     gradient_magnitude = np.sqrt(gradient_x**2 + gradient_y**2)
     gradient_direction = np.arctan2(gradient_y, gradient_x)
+    gradient_magnitude=custom_normalize(gradient_magnitude, 0, 255)
     return gradient_x, gradient_y, gradient_magnitude, gradient_direction
 
 def prewitt(image, kernel_size=3):
@@ -137,6 +141,7 @@ def prewitt(image, kernel_size=3):
     gradient_y = custom_convolution(image, Gy)
     gradient_magnitude = np.sqrt(gradient_x**2 + gradient_y**2)
     gradient_direction = np.arctan2(gradient_y, gradient_x)
+    gradient_magnitude=custom_normalize(gradient_magnitude, 0, 255)
     return gradient_x, gradient_y, gradient_magnitude, gradient_direction
 
 # Canny 
@@ -151,6 +156,26 @@ def canny(image, low_threshold=50, high_threshold=100):
     image = gaussian_filter(image, 5, 1)
     edges = cv2.Canny(image, low_threshold, high_threshold)
     return edges
+
+def custom_normalize(image, out_min=0, out_max=255):
+    """
+    Normalize image values to a specific range without using OpenCV.
+    """
+    # Handle empty images
+    if image is None or image.size == 0:
+        return None
+        
+    # Get min and max values
+    img_min = np.min(image)
+    img_max = np.max(image)
+    
+    # Avoid division by zero
+    if img_max == img_min:
+        return np.ones_like(image) * out_min
+    
+    # Normalize to specified range
+    normalized = (image - img_min) * (out_max - out_min) / (img_max - img_min) + out_min
+    return normalized.astype(np.uint8)
 
 # # using OpenCV
 # def apply_edge_filters(image):

@@ -41,6 +41,7 @@ def average_filter(image, kernel_size=5):
 
 def gaussian_kernel(size, sigma=1):
     """Generate a Gaussian kernel."""
+    
     ax = np.linspace(-(size // 2), size // 2, size)
     x, y = np.meshgrid(ax, ax)
     kernel = np.exp(-(x**2 + y**2) / (2 * sigma**2))
@@ -48,7 +49,9 @@ def gaussian_kernel(size, sigma=1):
 
 def gaussian_filter(image, kernel_size=5, sigma=1.5):
     """Apply a Gaussian filter."""
-    image = rgb_to_grayscale(image)
+    if len(image.shape) == 3:
+        image = rgb_to_grayscale(image)
+
     pad_size = kernel_size // 2
     padded_image = replicate_padding(image, pad_size)
     filtered_image = np.zeros_like(image)
