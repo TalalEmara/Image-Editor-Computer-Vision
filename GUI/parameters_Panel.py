@@ -62,7 +62,7 @@ class ParametersPanel(QWidget):
             spinbox.setStyleSheet(SPIN_BOX_STYLE)
 
 
-    def createSliderWithSpinBox(self, label_text, min_val, max_val):
+    def createSliderWithSpinBox(self, label_text, min_val, max_val,step=1):
         container = QWidget()
         layout = QHBoxLayout(container)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -197,11 +197,7 @@ class ParametersPanel(QWidget):
                     for control in selector_config['controls'][selected_type]:
                         self.createControlWidget(control, controls_layout)
 
-                self.update_parameter("Threshold Type", selected_type)
-    
-                if selected_type == "Local":
-                    window_size = 101 
-                    self.update_parameter("Window Size", window_size)
+                
 
             type_combo.currentTextChanged.connect(lambda text: self.update_parameter(config['title'], text))
             type_combo.currentTextChanged.connect(updateControls)
@@ -354,19 +350,18 @@ class ParametersPanel(QWidget):
             threshold_config = {
                 'title': 'Threshold',
                 'type_selector': {
-                    'label': 'Threshold Type',
-                    'options': ['Global','Local'],
+                    'label': 'Threshold Type:',
+                    'options': ['Global', 'Local'],
                     'controls': {
-                        
-                        'Global': [
-                            {'label': 'Threshold:', 'type': 'slider', 'range': (0, 255)}
-                        ]
+                        'Global': [{'label': 'Threshold:', 'type': 'slider', 'range': (0, 255)}],
+                        'Local': [{'label': 'window size', 'type': 'slider', 'range': (3, 255, 2)}]
                     }
                 }
             }
-
             self.current_group_boxes.append(self.createGroupBox(threshold_config))
 
+
+       
 
 
         for group_box in self.current_group_boxes:

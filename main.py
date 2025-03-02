@@ -89,7 +89,7 @@ class ImageProcessingApp(QMainWindow):
         self.parameters_panel.updateGroupBox(mode)
         self.current_parameters = self.parameters_panel.parameters.copy()
         if self.input_image is not None:
-            QApplication.processEvents()  
+            QApplication.processEvents()
             self.processImage()
 
         if self.current_mode == "Hybrid Images":
@@ -198,18 +198,21 @@ class ImageProcessingApp(QMainWindow):
 
         elif self.current_mode=="Gray":
             output_image=rgb_to_grayscale(self.input_image)
-        
+ 
         elif self.current_mode == "Threshold":
-            threshold_type = self.current_parameters.get("Threshold Type", "Global")
+           
+            threshold_type = self.current_parameters.get("Threshold")
+            
             if threshold_type == "Global":
                 threshold_value = int(self.current_parameters.get("Threshold:", 127))
-                output_image = globalThreshold(rgb_to_grayscale(output_image), threshold_value)
-
+                output_image = globalThreshold(rgb_to_grayscale(self.input_image), threshold_value)
+            
             elif threshold_type == "Local":
-                output_image = sauvolaThresholding(rgb_to_grayscale(output_image),101)
-
-
-
+                window_size = int(self.current_parameters.get("window size", 101))
+                if window_size % 2 == 0:  
+                    window_size += 1
+                output_image = sauvolaThresholding(rgb_to_grayscale(self.input_image), window_size)
+                    
 
         elif self.current_mode == "Noise & Filter":
             if "Noise" in self.current_parameters:
