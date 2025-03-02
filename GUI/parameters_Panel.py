@@ -128,16 +128,13 @@ class ParametersPanel(QWidget):
             slider = control_widget.findChildren(QSlider)[0]
             spinbox = control_widget.findChildren(QSpinBox)[0]
 
-            def update_spinbox_value(value):
-                odd_value = value if value % 2 != 0 else value + 1
-                spinbox.setValue(odd_value)
 
             def emit_parameter_change():
                 self.update_parameter(control['label'], spinbox.value())
 
-            slider.sliderReleased.connect(lambda: emit_parameter_change())
+            slider.sliderReleased.connect(emit_parameter_change)
             spinbox.valueChanged.connect(emit_parameter_change)
-            slider.sliderReleased.connect(lambda value: update_spinbox_value(value))
+            slider.sliderReleased.connect(lambda: spinbox.setValue(slider.value()))
             self.update_parameter(control['label'], spinbox.value())
 
         elif control['type'] == 'doubleSpin':
@@ -200,8 +197,15 @@ class ParametersPanel(QWidget):
                     for control in selector_config['controls'][selected_type]:
                         self.createControlWidget(control, controls_layout)
 
+                self.update_parameter("Threshold Type", selected_type)
+    
+                if selected_type == "Local":
+                    window_size = 101 
+                    self.update_parameter("Window Size", window_size)
+
             type_combo.currentTextChanged.connect(lambda text: self.update_parameter(config['title'], text))
             type_combo.currentTextChanged.connect(updateControls)
+            
 
             self.update_parameter(config['title'], selector_config['options'][0])
             updateControls(selector_config['options'][0])
@@ -314,7 +318,7 @@ class ParametersPanel(QWidget):
             self.current_group_boxes.append(self.createGroupBox(edge_config))
 
         elif selected_mode == "Frequency Domain Filter":
-            edge_config = {
+            Frequency_config = {
                 'title': 'Frequency Domain Filter',
                 'type_selector': {
                     'label': 'Frequency Filter:',
@@ -329,11 +333,11 @@ class ParametersPanel(QWidget):
                     }
                 }
             }
-            self.current_group_boxes.append(self.createGroupBox(edge_config))
+            self.current_group_boxes.append(self.createGroupBox(Frequency_config))
 
         
         elif selected_mode == "Hybrid Images":
-            edge_config = {
+            hyprid_config = {
                 'title': 'Hybrid Images',
                 'type_selector': None,  
                 'controls': [
@@ -344,25 +348,25 @@ class ParametersPanel(QWidget):
                 ]
             }
 
-            self.current_group_boxes.append(self.createGroupBox(edge_config))
+            self.current_group_boxes.append(self.createGroupBox(hyprid_config))
 
         elif selected_mode == "Threshold":
-           edge_config= {
+            threshold_config = {
                 'title': 'Threshold',
                 'type_selector': {
                     'label': 'Threshold Type',
                     'options': ['Global','Local'],
                     'controls': {
+                        
                         'Global': [
                             {'label': 'Threshold:', 'type': 'slider', 'range': (0, 255)}
-                        ],
-                        'Local': [
-                            {'label': 'Window Size:', 'type': 'slider', 'range': (1, 255),'default': 70,'step': 2}
                         ]
                     }
                 }
             }
-        self.current_group_boxes.append(self.createGroupBox(edge_config))
+
+            self.current_group_boxes.append(self.createGroupBox(threshold_config))
+
 
 
         for group_box in self.current_group_boxes:
