@@ -15,6 +15,7 @@ from Core.filters import average_filter, gaussian_filter, median_filter
 from Core.gray import rgb_to_grayscale
 from Core.thresholding import globalThreshold,sauvolaThresholding
 from Core.hybrid import hybrid_image
+from Core.normalize import normalize_image
 import cv2
 import numpy as np
 
@@ -245,6 +246,10 @@ class ImageProcessingApp(QMainWindow):
                 elif filter_type == "Median":
                     output_image = median_filter(output_image, kernel_size)
         
+        elif self.current_mode == "Normalize":
+            output_image = normalize_image(rgb_to_grayscale(self.input_image))
+
+
         self.outputViewer.setImage(output_image)
 
 
