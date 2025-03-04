@@ -80,6 +80,8 @@ class ImageProcessingApp(QMainWindow):
         self.mainInputViewer.imageChanged.connect(self.onImageChanged)
         self.secondaryInputViewer.imageChanged.connect(self.onSecondaryHybridChanged)
         # self.mainInputViewer.imageChanged.connect(self.processImage)
+        if hasattr(self.parameters_panel, "mix_button"):
+            self.parameters_panel.mix_button.clicked.connect(self.mix)
         
         print("UI connected")
 
@@ -95,66 +97,20 @@ class ImageProcessingApp(QMainWindow):
             self.processImage()
 
         if self.current_mode == "Hybrid Images":
-            self.mixButton = QPushButton("Mix")
-            self.inputLayout.addWidget(self.mixButton)
             self.inputLayout.addWidget(self.secondaryInputViewer, 50)
             self.secondaryInputViewer.show()
-
-            # Create sliders
-            self.weightSlider = QSlider()
-            self.lowPassSlider = QSlider()
-            self.highPassSlider = QSlider()
-
-            # Set slider ranges
-            self.weightSlider.setRange(0, 100)  # Weight: 0.0 - 1.0 (scaled by 100)
-            self.lowPassSlider.setRange(1, 100)  # Cutoff freq for low-pass filter
-            self.highPassSlider.setRange(1, 100)  # Cutoff freq for high-pass filter
-
-            # Set default values
-            self.weightSlider.setValue(50)  # Default weight = 0.5
-            self.lowPassSlider.setValue(3)  # Default low-pass cutoff
-            self.highPassSlider.setValue(70)  # Default high-pass cutoff
-
-            # Labels for sliders
-            self.weightLabel = QLabel("Weight: 0.5")
-            self.lowPassLabel = QLabel("Low Pass Cutoff: 3")
-            self.highPassLabel = QLabel("High Pass Cutoff: 70")
-
-            # Add sliders and labels to layout
-            self.inputLayout.addWidget(self.weightLabel)
-            self.inputLayout.addWidget(self.weightSlider)
-            self.inputLayout.addWidget(self.lowPassLabel)
-            self.inputLayout.addWidget(self.lowPassSlider)
-            self.inputLayout.addWidget(self.highPassLabel)
-            self.inputLayout.addWidget(self.highPassSlider)
-
-            # Connect sliders to update labels
-            self.weightSlider.valueChanged.connect(self.updateSliderLabels)
-            self.lowPassSlider.valueChanged.connect(self.updateSliderLabels)
-            self.highPassSlider.valueChanged.connect(self.updateSliderLabels)
-
-            # Connect mix button
-            self.mixButton.clicked.connect(self.mix)
-
-    def updateSliderLabels(self):
-        """ Update the labels with current slider values """
-        weight = self.weightSlider.value() / 100  # Scale back to 0.0 - 1.0
-        low_cutoff = self.lowPassSlider.value()
-        high_cutoff = self.highPassSlider.value()
-
-        self.weightLabel.setText(f"Weight: {weight:.2f}")
-        self.lowPassLabel.setText(f"Low Pass Cutoff: {low_cutoff}")
-        self.highPassLabel.setText(f"High Pass Cutoff: {high_cutoff}")
-
-        if self.input_image is not None:
-            QApplication.processEvents()
-            self.processImage()
+            if hasattr(self.parameters_panel, "mix_button"):
+                self.parameters_panel.mix_button.clicked.connect(self.mix)
 
     
     def onParameterChanged(self, parameters):
         self.current_parameters = parameters
-        if self.input_image is not None:
+        if self.current_mode == "Hybrid Images":
+            self.mix()  
+        elif self.input_image is not None:
             self.processImage()
+
+        
 
     
     def onImageChanged(self, image):
@@ -164,17 +120,17 @@ class ImageProcessingApp(QMainWindow):
         self.secondaryInput = image.copy()
 
     def mix(self):
+        if self.current_mode != "Hybrid Images":
+            return  
+        
         if self.input_image is None or self.secondaryInput is None:
             print("Error: One or both images are None!")
-            return  # Avoid crashing
+            return
 
-        weight = self.weightSlider.value() / 100  # Convert back to 0.0 - 1.0
-        low_cutoff = self.lowPassSlider.value()
-        high_cutoff = self.highPassSlider.value()
+        sigma = self.current_parameters.get("sigma", 8)  
 
-        self.outputViewer.setImage(hybrid_image(rgb_to_grayscale(self.input_image), rgb_to_grayscale(self.secondaryInput)))
-            # generate_hybrid_image(self.input_image, self.secondaryInput, weight, low_cutoff, high_cutoff))
-            # generate_hybrid_imageK(self.input_image, self.secondaryInput))
+        self.outputViewer.setImage(hybrid_image(rgb_to_grayscale(self.input_image), rgb_to_grayscale(self.secondaryInput),sigma))
+
 
 
     def processImage(self):

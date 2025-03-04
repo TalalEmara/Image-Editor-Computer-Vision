@@ -344,14 +344,25 @@ class ParametersPanel(QWidget):
                 'title': 'Hybrid Images',
                 'type_selector': None,  
                 'controls': [
-                    {'label': 'Weight:', 'type': 'doubleSpin', 'range': (0, 1), 'default': 0.5},
-                    {'label': 'Low Pass Cutoff:', 'type': 'slider', 'range': (0, 100), 'default': 20},
-                    {'label': 'High Pass Cutoff:', 'type': 'slider', 'range': (0, 100), 'default': 60},
-                    {'label': 'Mix', 'type': 'button'}
+                    {'label': 'sigma', 'type': 'slider', 'range': (1, 200), 'default': 8}
                 ]
             }
 
-            self.current_group_boxes.append(self.createGroupBox(hyprid_config))
+            hybrid_group = self.createGroupBox(hyprid_config)
+
+            self.mix_button = QPushButton("Mix")
+            self.mix_button.setStyleSheet(BUTTON_STYLE)
+            self.mix_button.setFixedWidth(120)
+
+            # Add the button to the group box layout
+            mix_button_layout = QHBoxLayout()
+            mix_button_layout.addWidget(self.mix_button)
+            mix_button_layout.setAlignment(Qt.AlignCenter)
+            hybrid_group.layout().addLayout(mix_button_layout)
+
+            # Store the group box
+            self.current_group_boxes.append(hybrid_group)
+
 
         elif selected_mode == "Threshold":
             threshold_config = {

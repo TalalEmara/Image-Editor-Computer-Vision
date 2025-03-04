@@ -96,7 +96,7 @@ def convolve2d(image, kernel):
 
     return output
 
-def hybrid_image(image1, image2):
+def hybrid_image(image1, image2,sigma=8):
     """
     Create a hybrid image by combining the low-pass filtered version of image1
     with the high-pass filtered version of image2.
@@ -112,7 +112,7 @@ def hybrid_image(image1, image2):
     assert image1.shape == image2.shape, "Input images must have the same dimensions."
 
     # Determine default sigma based on image dimensions
-    sigma = 8  # Default sigma as 1/16th of the smaller image dimension
+    # sigma = 8  # Default sigma as 1/16th of the smaller image dimension
 
     # Calculate kernel size based on sigma
     kernel_size = 30  # Ensures the kernel captures >99% of the Gaussian distribution
@@ -149,7 +149,7 @@ def hybrid_image(image1, image2):
     axes[2].set_title('Hybrid Image')
     axes[2].axis('off')
 
-    plt.show()
+    # plt.show()
 
     return hybrid.astype(np.uint8)
 
