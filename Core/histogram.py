@@ -65,10 +65,12 @@ def show_histograms(image):
 
     # Plot 2: Grayscale Distribution (PDF)
     gs, dist = distribution(image)
-    axes[1].bar(gs, dist, color='lightgreen')
+    cdf = np.cumsum(dist) 
+    cdf = cdf / cdf[-1]  
+    axes[1].bar(gs, cdf, color='darkgray')
     axes[1].set_title("Distribution of Image")
     axes[1].set_xlabel("Gray Scale")
-    axes[1].set_ylabel("PDF")
+    axes[1].set_ylabel("CDF")
 
     # Plot 3: RGB Histogram
     red, green, blue = histogramRGB(image)
@@ -96,11 +98,13 @@ def get_histogram_widget(image):
     # Create PyQtGraph plot widgets
     gray_hist_plot = pg.PlotWidget(title="Histogram of Image")
     gray_dist_plot = pg.PlotWidget(title="Distribution of Image")
+    # gray_cdf_plot = pg.PlotWidget(title="Distribution of Image")
     rgb_hist_plot = pg.PlotWidget(title="RGB Histogram")
 
     # Add plots to layout
     layout.addWidget(gray_hist_plot)
     layout.addWidget(gray_dist_plot)
+    # layout.addWidget(gray_cdf_plot)
     layout.addWidget(rgb_hist_plot)
 
     # Grayscale Histogram using BarGraphItem
@@ -112,7 +116,7 @@ def get_histogram_widget(image):
 
     # Grayscale Distribution (PDF)
     gs, dist = distribution(image)
-    bars_dist = pg.BarGraphItem(x=gs, height=dist, width=1, brush='lightgreen',  pen=None)
+    bars_dist = pg.BarGraphItem(x=gs, height=dist, width=1, brush='darkgray',  pen=None)
     gray_dist_plot.addItem(bars_dist)
     gray_dist_plot.setLabel('bottom', 'Gray Scale')
     gray_dist_plot.setLabel('left', 'PDF')

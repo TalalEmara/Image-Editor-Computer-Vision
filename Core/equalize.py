@@ -100,7 +100,7 @@ def show_equalized_histograms(equalized_image):
     #CDF graph
     cdf = np.cumsum(hist_eq)  
     cdf_normalized = cdf / cdf.max()
-    axes[2].plot(gs_eq, cdf, color='blue', linewidth=2)
+    axes[2].plot(gs_eq, cdf_normalized, color='blue', linewidth=2)
     axes[2].set_title("Cumulative Distribution Function (CDF)")
     axes[2].set_xlabel("Gray Scale")
     axes[2].set_ylabel("Cumulative Probability")
