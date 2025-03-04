@@ -8,7 +8,7 @@ from GUI.modes import ModeSelector
 from GUI.parameters_Panel import ParametersPanel
 from GUI.ImageViewer import ImageViewer
 from Core.NoiseAdder import add_uniform_noise, add_gaussian_noise, add_salt_pepper_noise
-from Core.frequencyFilter import add_HighPass_filter, add_LowPass_filter, generate_hybrid_image, generate_hybrid_imageK
+from Core.frequencyFilter import add_HighPass_filter, add_LowPass_filter #generate_hybrid_image, generate_hybrid_imageK
 from Core.equalize import equalization, show_equalized_histograms
 from Core.histogram import show_histograms, get_histogram_widget
 from Core.filters import average_filter, gaussian_filter, median_filter
