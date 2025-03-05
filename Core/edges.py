@@ -52,25 +52,20 @@ def generate_sobel_kernels(kernel_size):
                        [0, 0, 0], 
                        [-1, -2, -1]])
     else:
-        # For larger kernels, use a different approach
-        # This is a simplified example - OpenCV uses more complex methods
-        Gx = np.zeros((kernel_size, kernel_size))
-        Gy = np.zeros((kernel_size, kernel_size))
+        pascal_row = np.polyval([1] * kernel_size, 1)  # Generate row coefficients
+        pascal_row = np.array([np.math.comb(kernel_size - 1, i) for i in range(kernel_size)])
         
-        center = kernel_size // 2
-        for i in range(kernel_size):
-            for j in range(kernel_size):
-                if j < center:
-                    Gx[i, j] = -(center - j + 1)
-                elif j > center:
-                    Gx[i, j] = (j - center + 1)
-                
-                if i < center:
-                    Gy[i, j] = -(center - i + 1)
-                elif i > center:
-                    Gy[i, j] = (i - center + 1)
+        # Create the 1D derivative kernel
+        deriv_kernel = np.array([-i for i in range(-(kernel_size//2), kernel_size//2 + 1)])
+        
+        # Compute the 2D Sobel kernels by outer product
+        Gx = np.outer(deriv_kernel, pascal_row)
+        Gy = np.outer(pascal_row, deriv_kernel)
+        
+    # Normalize
     Gx = Gx / np.sum(np.abs(Gx))
     Gy = Gy / np.sum(np.abs(Gy))
+        
     return Gx, Gy
 
 def generate_roberts_kernels():
