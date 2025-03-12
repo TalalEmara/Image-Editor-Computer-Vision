@@ -102,7 +102,7 @@ def draw_line(image, pt1, pt2, color, thickness=1):
                 err += dx
                 y += sy
 
-def active_contour(image, start_point, end_point, alpha=0.1, beta=0.1, gamma=1.0, max_iterations=300, adaptive_weights=True, circularity_weight=0.0):
+def snake_active_contour(image, start_point, end_point, alpha=0.1, beta=0.1, gamma=1.0, max_iterations=300, adaptive_weights=True, circularity_weight=0.0):
     gray, combined_edges, original_img = detect_edges(image)
     
     # Create energy map (invert so edges are low energy)
@@ -118,8 +118,8 @@ def active_contour(image, start_point, end_point, alpha=0.1, beta=0.1, gamma=1.0
     combined_energy = 0.5 * energy_map + 0.5 * edge_distance
     
     # Smooth the energy map
-    combined_energy = combined_energy.astype(np.float32)  # Ensure the image is in the correct format
-    energy_map_smooth = gaussian_filter(combined_energy, 5, 1)  # Use a larger kernel size for smoothing
+    combined_energy = combined_energy.astype(np.float32) 
+    energy_map_smooth = gaussian_filter(combined_energy, 5, 1)  
     
     # Initialize contour as a rectangle
     x1, y1 = start_point
@@ -129,7 +129,7 @@ def active_contour(image, start_point, end_point, alpha=0.1, beta=0.1, gamma=1.0
     bottom = np.linspace([x2, y2], [x1, y2], 30)
     left = np.linspace([x1, y2], [x1, y1], 30)
     contour = np.vstack([top, right, bottom, left])
-    initial_contour = contour.copy()  # Save the initial contour
+    initial_contour = contour.copy() 
     center_x, center_y = (x1 + x2) / 2, (y1 + y2) / 2
     
     # Resample to ensure even distribution
@@ -145,7 +145,7 @@ def active_contour(image, start_point, end_point, alpha=0.1, beta=0.1, gamma=1.0
     for iteration in range(max_iterations):
         prev_contour = contour.copy()
         
-        # Adaptive weights based on iteration progress
+        # Adaptive weights based on iteration 
         if adaptive_weights:
             progress = iteration / max_iterations
             ext_weight = gamma * (1.0 - 0.5 * progress)
@@ -156,7 +156,7 @@ def active_contour(image, start_point, end_point, alpha=0.1, beta=0.1, gamma=1.0
             smooth_weight = alpha
             rigidity_weight = beta
         
-        # Compute radial forces (external energy)
+        # Compute external energy
         forces = np.zeros_like(contour)
         h, w = energy_map_smooth.shape
         for i, point in enumerate(contour):
@@ -185,7 +185,7 @@ def active_contour(image, start_point, end_point, alpha=0.1, beta=0.1, gamma=1.0
             forces[i, 0] = radius_change * np.cos(angle)
             forces[i, 1] = radius_change * np.sin(angle)
         
-        # Compute gradient-based forces (internal energy)
+        # Compute internal energy
         gradient_forces = np.zeros_like(contour)
         for i, point in enumerate(contour):
             x, y = int(np.clip(point[0], 0, w-1)), int(np.clip(point[1], 0, h-1))
@@ -199,7 +199,7 @@ def active_contour(image, start_point, end_point, alpha=0.1, beta=0.1, gamma=1.0
         combined_forces = 0.5 * forces + 0.5 * gradient_forces
         contour += ext_weight * combined_forces
         
-        # Apply smoothing and rigidity (internal energy)
+        # Apply smoothing and rigidity ,internal energy
         if iteration % 3 == 0:
             num_points = len(contour)
             smoothed = contour.copy()
@@ -212,7 +212,6 @@ def active_contour(image, start_point, end_point, alpha=0.1, beta=0.1, gamma=1.0
                         smoothed[i] += rigidity_weight * (contour[i - 1] - 2 * contour[i] + contour[i + 1])
             contour = smoothed
         
-        # Constrain points to image boundaries
         contour[:, 0] = np.clip(contour[:, 0], 0, w-1)
         contour[:, 1] = np.clip(contour[:, 1], 0, h-1)
         
@@ -266,7 +265,6 @@ def active_contour(image, start_point, end_point, alpha=0.1, beta=0.1, gamma=1.0
 # gamma: Controls the attraction to the edges (range: 0.0 to 1.0)
 
 def resample_contour(contour, num_points=100):
-    """Resample contour to have evenly distributed points."""
     contour_tuple = contour.reshape(-1, 2)
     closed_contour = np.vstack([contour_tuple, contour_tuple[0]])
     dist = np.zeros(len(closed_contour))
@@ -280,17 +278,14 @@ def resample_contour(contour, num_points=100):
 
 
 if __name__ == "__main__":
-    img_path = "images/apple.png"  # Your image
+    img_path = "images/fish.png" 
     
-    # Let user select the region dynamically
     original_img = cv2.imread(img_path)
     image=original_img.copy()
     start_point, end_point = select_initial_region(original_img)
 
-    # Apply active contour
-    final_img, initial_contour, final_contour = active_contour(image, start_point, end_point, alpha=0.1, beta=0.1, gamma=1.0)
+    final_img, initial_contour, final_contour = snake_active_contour(image, start_point, end_point, alpha=0.1, beta=0.1, gamma=1.0)
     
-    # Show results with overlay visualization
     plt.figure(figsize=(8, 5))
     plt.imshow(cv2.cvtColor(final_img, cv2.COLOR_BGR2RGB))
     plt.plot(initial_contour[:, 0], initial_contour[:, 1], 'r--', label='Initial Contour')  # Plot initial contour
