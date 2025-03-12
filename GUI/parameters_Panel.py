@@ -62,7 +62,7 @@ class ParametersPanel(QWidget):
             spinbox.setStyleSheet(SPIN_BOX_STYLE)
 
 
-    def createSliderWithSpinBox(self, label_text, min_val, max_val,step=1,default=None):
+    def createSliderWithSpinBox(self, label_text, min_val, max_val, step=1, default=None):
         container = QWidget()
         layout = QHBoxLayout(container)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -71,16 +71,15 @@ class ParametersPanel(QWidget):
         label = QLabel(label_text)
         label.setMinimumWidth(100)
 
-
         slider = QSlider(Qt.Horizontal)
         slider.setRange(min_val, max_val)
-        slider.setSingleStep(step)
+        slider.setSingleStep(int(step))  # Ensure step is an integer
         slider.setMinimumWidth(100)
         slider.setStyleSheet(SLIDER_STYLE)
 
         spinbox = QSpinBox()
         spinbox.setRange(min_val, max_val)
-        spinbox.setSingleStep(step)
+        spinbox.setSingleStep(int(step))  # Ensure step is an integer
         spinbox.setFixedWidth(70)
         spinbox.setStyleSheet(SPIN_BOX_STYLE)
 
@@ -129,15 +128,14 @@ class ParametersPanel(QWidget):
     def createControlWidget(self, control, controls_layout):
         if control['type'] == 'slider':
             control_widget = self.createSliderWithSpinBox(
-            control['label'], control['range'][0], control['range'][1], 
-            step=control.get('step', 1),  
-            default=control.get('default', control['range'][0])  
-                    )
+                control['label'], control['range'][0], control['range'][1], 
+                step=control.get('step', 1),  
+                default=control.get('default', control['range'][0])  
+            )
 
             controls_layout.addWidget(control_widget)
             slider = control_widget.findChildren(QSlider)[0]
             spinbox = control_widget.findChildren(QSpinBox)[0]
-
 
             def emit_parameter_change():
                 self.update_parameter(control['label'], spinbox.value())
@@ -378,8 +376,17 @@ class ParametersPanel(QWidget):
             }
             self.current_group_boxes.append(self.createGroupBox(threshold_config))
 
-
-       
+        elif selected_mode == "Snake":
+            snake_config = {
+                'title': 'Snake Parameters',
+                'type_selector': None,
+                'controls': [
+                    {'label': 'alpha', 'type': 'doubleSpin', 'range': (0, 1), 'step': 0.01, 'default': 0.1},
+                    {'label': 'beta', 'type': 'doubleSpin', 'range': (0, 1), 'step': 0.01, 'default': 0.1},
+                    {'label': 'gamma', 'type': 'doubleSpin', 'range': (0, 1), 'step': 0.01, 'default': 1.0}
+                ]
+            }
+            self.current_group_boxes.append(self.createGroupBox(snake_config))
 
 
         for group_box in self.current_group_boxes:

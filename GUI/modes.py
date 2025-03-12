@@ -19,7 +19,8 @@ class ModeSelector(QWidget):
             "Histogram": "Histogram",
             "Equalization": "Equalization",
             "Normalize": "Normalize",
-            "Hybrid Images": "Hybrid Images"
+            "Hybrid Images": "Hybrid Images",
+            "Snake":"Snake"
         }
         
         for display_name, signal_name in button_names.items():
