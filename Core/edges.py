@@ -8,8 +8,8 @@ Testing and builtin functions are done at the end of the file
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-from gray import rgb_to_grayscale
-from filters import gaussian_filter
+from Core.gray import rgb_to_grayscale
+from Core.filters import gaussian_filter
 
 # convolution
 def custom_convolution(image, kernel):

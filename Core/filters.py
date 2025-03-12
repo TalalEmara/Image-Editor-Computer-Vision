@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-from gray import rgb_to_grayscale
+from Core.gray import rgb_to_grayscale
 
 def replicate_padding(image, pad_size):
     """Apply replicate padding to an image."""

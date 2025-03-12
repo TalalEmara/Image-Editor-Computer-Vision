@@ -1,8 +1,8 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-from edges import gaussian_filter, sobel, custom_convolution
-from normalize import normalize_image
+from Core.edges import gaussian_filter, sobel, custom_convolution
+from Core.normalize import normalize_image
 
 # Global variables
 start_point = None
@@ -42,10 +42,9 @@ def select_initial_region(image):
     else:
         raise ValueError("No region selected! Please select an initial region.")
 
-def detect_edges(image_path):
-    img = cv2.imread(image_path)
+def detect_edges(img):
     if img is None:
-        raise ValueError(f"Could not read image at {image_path}")
+        raise ValueError("Input image is None")
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     blurred = gaussian_filter(gray, 5, 1)
     edges1 = cv2.Canny(blurred, 30, 100)
@@ -103,8 +102,8 @@ def draw_line(image, pt1, pt2, color, thickness=1):
                 err += dx
                 y += sy
 
-def active_contour(image_path, start_point, end_point, alpha=0.1, beta=0.1, gamma=1.0, max_iterations=300, adaptive_weights=True, circularity_weight=0.0):
-    gray, combined_edges, original_img = detect_edges(image_path)
+def active_contour(image, start_point, end_point, alpha=0.1, beta=0.1, gamma=1.0, max_iterations=300, adaptive_weights=True, circularity_weight=0.0):
+    gray, combined_edges, original_img = detect_edges(image)
     
     # Create energy map (invert so edges are low energy)
     blurred = gaussian_filter(gray, 5, 1)
@@ -285,10 +284,11 @@ if __name__ == "__main__":
     
     # Let user select the region dynamically
     original_img = cv2.imread(img_path)
+    image=original_img.copy()
     start_point, end_point = select_initial_region(original_img)
 
     # Apply active contour
-    final_img, initial_contour, final_contour = active_contour(img_path, start_point, end_point, alpha=0.1, beta=0.1, gamma=1.0)
+    final_img, initial_contour, final_contour = active_contour(image, start_point, end_point, alpha=0.1, beta=0.1, gamma=1.0)
     
     # Show results with overlay visualization
     plt.figure(figsize=(8, 5))
