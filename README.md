@@ -1,4 +1,3 @@
-
 <h1 align="center">
     <img alt="Image Processor Demo" src="Readme/demo.gif" />
 </h1>
