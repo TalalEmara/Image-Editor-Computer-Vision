@@ -32,7 +32,6 @@ This tool serves as a foundational platform for tasks in:
 - Digital image processing
 - Computer vision
 - Biomedical image analysis
-- Machine learning preprocessing
 
 ---
 
